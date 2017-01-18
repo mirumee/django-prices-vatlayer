@@ -23,7 +23,8 @@ def get_european_vat_rates():
 def create_objects_from_json(json_data):
     if not json_data['success']:
         # handle errors
-        pass
+        info = json_data['error']['info']
+        raise ImproperlyConfigured(info)
 
     # Handle proper response
     rates = json_data['rates']
