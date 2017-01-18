@@ -25,11 +25,10 @@ setup(
     description='vatlayer.org support for django',
     license='BSD',
     url='https://github.com/mirumee/django-prices-vatlayer',
-    packages=[
-        'django_prices_vatlayer'],
+    packages=['django_prices_vatlayer'],
     include_package_data=True,
     classifiers=CLASSIFIERS,
-    install_requires=['Django>=1.4'],
+    install_requires=['Django', 'requests'],
     platforms=['any'],
     test_suite='django_prices_vatlayer.tests',
     zip_safe=False)
