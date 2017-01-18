@@ -13,7 +13,6 @@ except AttributeError:
     raise ImproperlyConfigured('VATLAYER_ACCESS_KEY is required')
 
 RATINGS_URL = 'http://apilayer.net/api/rate_list'
-TYPES_URL = 'http://apilayer.net/api/types'
 
 
 def validate_data(json_data):
@@ -27,13 +26,6 @@ def get_european_vat_rates():
     return response.json()
 
 
-def get_european_vat_types():
-    response = requests.get(TYPES_URL, params={'access_key': ACCESS_KEY})
-    json_data = response.json()
-    validate_data(json_data)
-    return json_data['types']
-
-
 def create_objects_from_json(json_data):
     validate_data(json_data)
 
@@ -42,3 +34,12 @@ def create_objects_from_json(json_data):
     for code, value in six.iteritems(rates):
         Vat.objects.update_or_create(
              country_code=code, defaults={'data': value})
+
+
+def get_tax_for_country(country_code, rate_name):
+    country_vat = Vat.objects.get(country_code=country_code)
+    reduced_rates = country_vat.data['reduced_rates']
+    try:
+        return reduced_rates[rate_name]
+    except KeyError:
+        return country_vat.data['standard_rate']
