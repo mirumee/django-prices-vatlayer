@@ -31,5 +31,6 @@ setup(
     install_requires=['Django', 'requests'],
     platforms=['any'],
     test_suite='django_prices_vatlayer.tests',
+    tests_require=['mock==1.0.1'],
     zip_safe=False)
 
