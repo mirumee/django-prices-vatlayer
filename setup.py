@@ -2,7 +2,7 @@
 import os
 from setuptools import setup
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'test_settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tests.settings')
 
 CLASSIFIERS = [
     'Environment :: Web Environment',
@@ -31,6 +31,6 @@ setup(
     install_requires=['Django', 'requests'],
     platforms=['any'],
     test_suite='django_prices_vatlayer.tests',
-    tests_require=['mock==1.0.1'],
+    tests_require=['mock', 'pytest', 'pytest-django'],
     zip_safe=False)
 
