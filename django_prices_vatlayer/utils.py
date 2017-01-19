@@ -4,8 +4,6 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils import six
 
-from .models import Vat
-
 
 try:
     ACCESS_KEY = settings.VATLAYER_ACCESS_KEY
@@ -27,6 +25,8 @@ def get_european_vat_rates():
 
 
 def create_objects_from_json(json_data):
+    from .models import Vat
+
     validate_data(json_data)
 
     # Handle proper response
@@ -37,6 +37,7 @@ def create_objects_from_json(json_data):
 
 
 def get_tax_for_country(country_code, rate_name):
+    from .models import Vat
     country_vat = Vat.objects.get(country_code=country_code)
     reduced_rates = country_vat.data['reduced_rates']
     try:
