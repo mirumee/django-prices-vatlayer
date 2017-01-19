@@ -1,10 +1,11 @@
 import pytest
+from prices import Price
 
 import django
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.management import call_command
 
-from django_prices_vatlayer import utils
+from django_prices_vatlayer import utils, EuropeanVAT
 
 django.setup()
 
@@ -51,3 +52,43 @@ def test_get_vat_rates_command(monkeypatch, json_success):
     count = Vat.objects.count()
     call_command('get_vat_rates')
     assert count + 1 == Vat.objects.count()
+
+
+@pytest.mark.django_db
+def test_european_vat_calculate_tax(vat_country):
+    from django_prices_vatlayer.models import Vat
+    vat_books = EuropeanVAT('AT', 'books')
+    price = Price(net=100)
+    tax_value = vat_books.calculate_tax(price)
+    assert tax_value == 10
+
+    vat_wrong_country = EuropeanVAT('TT', 'books')
+
+    with pytest.raises(ObjectDoesNotExist):
+        tax_value = vat_wrong_country.calculate_tax(price)
+
+    Vat.objects.create(country_code='AU', data={})
+    vat_without_rates = EuropeanVAT('AU', 'books')
+
+    with pytest.raises(KeyError):
+        tax_value = vat_without_rates.calculate_tax(price)
+
+
+@pytest.mark.django_db
+def test_european_vat_apply(vat_country):
+    from django_prices_vatlayer.models import Vat
+    vat_books = EuropeanVAT('AT', 'books')
+    price = Price(net=100)
+    tax_value = vat_books.apply(price)
+    assert tax_value.gross == 110
+
+    vat_wrong_country = EuropeanVAT('TT', 'books')
+
+    tax_value = vat_wrong_country.apply(price)
+    assert tax_value == price
+
+    Vat.objects.create(country_code='AU', data={})
+    vat_without_rates = EuropeanVAT('AU', 'books')
+
+    tax_value = vat_without_rates.apply(price)
+    assert tax_value == price
