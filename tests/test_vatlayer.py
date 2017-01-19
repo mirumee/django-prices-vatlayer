@@ -1,7 +1,7 @@
 import pytest
 
 import django
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 
 
 django.setup()
@@ -28,3 +28,16 @@ def test_create_objects_from_json(json_error, json_success):
 
     create_objects_from_json(json_success)
     assert vat_counts + 1 == Vat.objects.count()
+
+
+def test_get_tax_for_country(vat_country):
+    from django_prices_vatlayer.utils import get_tax_for_country
+
+    with pytest.raises(ObjectDoesNotExist):
+        get_tax_for_country('XX', 'rate name')
+
+    standard_rate = get_tax_for_country(vat_country.country_code, 'medicine')
+    assert standard_rate == 20
+
+    reduced_rate = get_tax_for_country(vat_country.country_code, 'books')
+    assert reduced_rate == 10
