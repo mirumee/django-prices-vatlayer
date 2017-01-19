@@ -1,7 +1,9 @@
 import pytest
+from mock import Mock
 
 import django
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
+from django.core.management import call_command
 
 
 django.setup()
@@ -41,3 +43,15 @@ def test_get_tax_for_country(vat_country):
 
     reduced_rate = get_tax_for_country(vat_country.country_code, 'books')
     assert reduced_rate == 10
+
+
+@pytest.mark.django_db
+def test_get_vat_rates_command(monkeypatch, json_success, json_error):
+    from django_prices_vatlayer import utils
+    from django_prices_vatlayer.models import Vat
+    monkeypatch.setattr(utils, 'get_european_vat_rates',
+                        lambda: json_success)
+
+    count = Vat.objects.count()
+    call_command('get_vat_rates')
+    assert count + 1 == Vat.objects.count()
