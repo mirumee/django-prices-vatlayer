@@ -58,7 +58,8 @@ def test_create_objects_from_json(json_error, json_success):
 
 
 @pytest.mark.parametrize('rate_name,expected',
-                         [('medicine', Decimal(20)), ('books', Decimal(10))])
+                         [('medicine', Decimal(20)), ('books', Decimal(10)),
+                          (None, Decimal(20))])
 def test_get_tax_for_country(vat_country, rate_name, expected):
     country_code = vat_country.country_code
     rate = utils.get_tax_for_country(country_code, rate_name)

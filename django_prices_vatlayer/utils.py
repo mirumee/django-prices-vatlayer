@@ -36,7 +36,7 @@ def create_objects_from_json(json_data):
              country_code=code, defaults={'data': value})
 
 
-def get_tax_for_country(country_code, rate_name):
+def get_tax_for_country(country_code, rate_name=None):
     try:
         country_vat = EuropeanVatRate.objects.get(country_code=country_code)
         reduced_rates = country_vat.data['reduced_rates']
@@ -44,8 +44,7 @@ def get_tax_for_country(country_code, rate_name):
     except (KeyError, ObjectDoesNotExist):
         return None
 
-    try:
+    rate = standard_rate
+    if rate_name is not None and rate_name in six.iterkeys(reduced_rates):
         rate = reduced_rates[rate_name]
-    except KeyError:
-        rate = standard_rate
     return Decimal(rate)
