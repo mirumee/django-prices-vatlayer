@@ -31,6 +31,6 @@ setup(
     install_requires=['Django', 'requests'],
     platforms=['any'],
     test_suite='django_prices_vatlayer.tests',
-    tests_require=['mock', 'pytest', 'pytest-django'],
+    tests_require=['pytest', 'pytest-django', 'dj-database-url'],
     zip_safe=False)
 
