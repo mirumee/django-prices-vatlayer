@@ -85,14 +85,14 @@ def test_european_vat_calculate_tax(vat_country):
 @pytest.mark.django_db
 def test_european_vat_apply(vat_country, vat_without_rates):
     vat_books = EuropeanVAT('AT', 'books')
-    price = Price(net=100)
+    price = Price(net=100, gross=110)
     tax_value = vat_books.apply(price)
-    assert tax_value.gross == 110
+    assert tax_value.gross == 121
 
     vat_wrong_country = EuropeanVAT('TT', 'books')
 
     tax_value = vat_wrong_country.apply(price)
-    assert tax_value == price
+    assert tax_value.gross == price.gross
 
     vat_without_rates = EuropeanVAT('AU', 'books')
 

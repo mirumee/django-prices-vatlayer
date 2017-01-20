@@ -12,7 +12,7 @@ class EuropeanVAT(Tax):
 
     def calculate_tax(self, price_obj):
         vat_rate = get_tax_for_country(self.country_code, self.rate_name)
-        return (vat_rate * price_obj.net) / 100
+        return (vat_rate * price_obj.gross) / 100
 
     def apply(self, price_obj):
         try:
