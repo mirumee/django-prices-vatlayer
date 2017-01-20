@@ -1,5 +1,5 @@
-import requests
 from decimal import Decimal
+import requests
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
@@ -27,7 +27,6 @@ def get_european_vat_rates():
 
 
 def create_objects_from_json(json_data):
-
     validate_data(json_data)
 
     # Handle proper response
