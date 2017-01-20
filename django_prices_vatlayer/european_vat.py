@@ -1,4 +1,5 @@
-from prices import Tax
+from decimal import Decimal
+from prices import Tax, PriceRange
 
 from .utils import get_tax_for_country
 
@@ -11,11 +12,8 @@ class EuropeanVAT(Tax):
     def calculate_tax(self, price_obj):
         vat_rate = get_tax_for_country(self.country_code, self.rate_name)
         if vat_rate is None:
-            return 0
+            return Decimal(0)
         return (vat_rate * price_obj.gross) / 100
-
-    def apply(self, price_obj):
-        return super(EuropeanVAT, self).apply(price_obj)
 
     def __repr__(self):
         return 'EuropeanVat(%s, %s)' % (self.country_code, self.rate_name)
