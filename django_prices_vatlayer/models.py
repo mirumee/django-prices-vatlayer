@@ -5,7 +5,7 @@ from django.utils.encoding import python_2_unicode_compatible
 
 
 @python_2_unicode_compatible
-class Vat(models.Model):
+class EuropeanVatRates(models.Model):
     country_code = models.CharField(
         pgettext_lazy('Vat field', 'country code'), max_length=2)
     data = JSONField(pgettext_lazy('Vat field', 'data'))
