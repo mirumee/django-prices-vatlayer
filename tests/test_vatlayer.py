@@ -64,7 +64,7 @@ def test_get_vat_rates_command(monkeypatch, json_success):
 
 
 @pytest.mark.django_db
-def test_european_vat_calculate_tax(vat_country):
+def test_european_vat_calculate_tax(vat_country, vat_without_rates):
     vat_books = EuropeanVAT('AT', 'books')
     price = Price(net=100)
     tax_value = vat_books.calculate_tax(price)
@@ -75,7 +75,6 @@ def test_european_vat_calculate_tax(vat_country):
     with pytest.raises(ObjectDoesNotExist):
         tax_value = vat_wrong_country.calculate_tax(price)
 
-    Vat.objects.create(country_code='AU', data={})
     vat_without_rates = EuropeanVAT('AU', 'books')
 
     with pytest.raises(KeyError):
