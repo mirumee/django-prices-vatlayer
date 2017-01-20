@@ -7,7 +7,8 @@ import pytest
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.management import call_command
 
-from django_prices_vatlayer import utils, EuropeanVAT
+from django_prices_vatlayer import utils
+from django_prices_vatlayer.european_vat import EuropeanVAT
 from django_prices_vatlayer.models import Vat
 
 
