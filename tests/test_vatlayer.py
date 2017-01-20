@@ -54,9 +54,8 @@ def test_get_vat_rates_command(monkeypatch, json_success):
     monkeypatch.setattr(utils, 'get_european_vat_rates',
                         lambda: json_success)
 
-    count = Vat.objects.count()
     call_command('get_vat_rates')
-    assert count + 1 == Vat.objects.count()
+    assert 1 == Vat.objects.count()
 
 
 @pytest.mark.django_db
