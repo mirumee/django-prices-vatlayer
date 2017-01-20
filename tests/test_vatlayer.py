@@ -24,6 +24,18 @@ def vat_without_rates(db):
     return Vat.objects.create(country_code='AU', data={})
 
 
+@pytest.fixture
+def get_european_vat_rates_success(monkeypatch, json_success):
+    monkeypatch.setattr(utils, 'get_european_vat_rates',
+                        lambda: json_success)
+
+
+@pytest.fixture
+def get_european_vat_rates_error(monkeypatch, json_error):
+    monkeypatch.setattr(utils, 'get_european_vat_rates',
+                        lambda: json_error)
+
+
 def test_validate_data_invalid(json_error):
     with pytest.raises(ImproperlyConfigured):
         utils.validate_data(json_error)
@@ -60,12 +72,17 @@ def test_get_tax_for_country_error():
 
 
 @pytest.mark.django_db
-def test_get_vat_rates_command(monkeypatch, json_success):
-    monkeypatch.setattr(utils, 'get_european_vat_rates',
-                        lambda: json_success)
+def test_get_vat_rates_command(monkeypatch, get_european_vat_rates_success):
 
     call_command('get_vat_rates')
     assert 1 == Vat.objects.count()
+
+
+@pytest.mark.django_db
+def test_get_vat_rates_command(monkeypatch, get_european_vat_rates_error):
+
+    with pytest.raises(ImproperlyConfigured):
+        call_command('get_vat_rates')
 
 
 @pytest.mark.django_db
