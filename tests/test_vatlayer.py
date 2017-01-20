@@ -1,13 +1,14 @@
-import pytest
-from prices import Price
-
 import django
+django.setup()
+
+from prices import Price
+import pytest
+
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.management import call_command
 
 from django_prices_vatlayer import utils, EuropeanVAT
-
-django.setup()
+from django_prices_vatlayer.models import Vat
 
 
 def test_validate_data(json_error, json_success):
@@ -19,7 +20,6 @@ def test_validate_data(json_error, json_success):
 
 @pytest.mark.django_db
 def test_create_objects_from_json(json_error, json_success):
-    from django_prices_vatlayer.models import Vat
 
     vat_counts = Vat.objects.count()
 
@@ -45,7 +45,6 @@ def test_get_tax_for_country(vat_country):
 
 @pytest.mark.django_db
 def test_get_vat_rates_command(monkeypatch, json_success):
-    from django_prices_vatlayer.models import Vat
     monkeypatch.setattr(utils, 'get_european_vat_rates',
                         lambda: json_success)
 
@@ -56,7 +55,6 @@ def test_get_vat_rates_command(monkeypatch, json_success):
 
 @pytest.mark.django_db
 def test_european_vat_calculate_tax(vat_country):
-    from django_prices_vatlayer.models import Vat
     vat_books = EuropeanVAT('AT', 'books')
     price = Price(net=100)
     tax_value = vat_books.calculate_tax(price)
@@ -76,7 +74,6 @@ def test_european_vat_calculate_tax(vat_country):
 
 @pytest.mark.django_db
 def test_european_vat_apply(vat_country):
-    from django_prices_vatlayer.models import Vat
     vat_books = EuropeanVAT('AT', 'books')
     price = Price(net=100)
     tax_value = vat_books.apply(price)
