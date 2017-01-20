@@ -18,6 +18,11 @@ def vat_country(db, json_success):
     return Vat.objects.create(country_code='AT', data=data)
 
 
+@pytest.fixture
+def vat_without_rates(db):
+    return Vat.objects.create(country_code='AU', data={})
+
+
 def test_validate_data(json_error, json_success):
     with pytest.raises(ImproperlyConfigured):
         utils.validate_data(json_error)
@@ -78,7 +83,7 @@ def test_european_vat_calculate_tax(vat_country):
 
 
 @pytest.mark.django_db
-def test_european_vat_apply(vat_country):
+def test_european_vat_apply(vat_country, vat_without_rates):
     vat_books = EuropeanVAT('AT', 'books')
     price = Price(net=100)
     tax_value = vat_books.apply(price)
@@ -89,7 +94,6 @@ def test_european_vat_apply(vat_country):
     tax_value = vat_wrong_country.apply(price)
     assert tax_value == price
 
-    Vat.objects.create(country_code='AU', data={})
     vat_without_rates = EuropeanVAT('AU', 'books')
 
     tax_value = vat_without_rates.apply(price)
