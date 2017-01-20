@@ -2,6 +2,7 @@ import django
 django.setup()
 
 from prices import Price
+from decimal import Decimal
 import pytest
 
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
@@ -44,16 +45,18 @@ def test_create_objects_from_json(json_error, json_success):
     assert vat_counts + 1 == Vat.objects.count()
 
 
-def test_get_tax_for_country(vat_country):
+@pytest.mark.parametrize('rate_name,expected',
+                         [('medicine', Decimal(20)), ('books', Decimal(10))])
+def test_get_tax_for_country(vat_country, rate_name, expected):
+    country_code = vat_country.country_code
+    rate = utils.get_tax_for_country(country_code, rate_name)
+    assert rate == expected
+
+
+@pytest.mark.django_db
+def test_get_tax_for_country_error():
     with pytest.raises(ObjectDoesNotExist):
         utils.get_tax_for_country('XX', 'rate name')
-
-    country_code = vat_country.country_code
-    standard_rate = utils.get_tax_for_country(country_code, 'medicine')
-    assert standard_rate == 20
-
-    reduced_rate = utils.get_tax_for_country(country_code, 'books')
-    assert reduced_rate == 10
 
 
 @pytest.mark.django_db
