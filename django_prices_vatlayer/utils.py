@@ -1,4 +1,5 @@
 import requests
+from decimal import Decimal
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -40,6 +41,7 @@ def get_tax_for_country(country_code, rate_name):
     country_vat = Vat.objects.get(country_code=country_code)
     reduced_rates = country_vat.data['reduced_rates']
     try:
-        return reduced_rates[rate_name]
+        rate = reduced_rates[rate_name]
     except KeyError:
-        return country_vat.data['standard_rate']
+        rate = country_vat.data['standard_rate']
+    return Decimal(rate)
