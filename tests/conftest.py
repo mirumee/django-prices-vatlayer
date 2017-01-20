@@ -18,14 +18,13 @@ def json_error():
 @pytest.fixture
 def json_success():
     data = {'success': True, 'rates': {
-        "AT": {"country_name": "Austria", "standard_rate": 20,
-               "reduced_rates": {"foodstuffs": 10, "books": 10}}}}
+        'AT': {'country_name': 'Austria', 'standard_rate': 20,
+               'reduced_rates': {'foodstuffs': 10, 'books': 10}}}}
     return data
 
 
 @pytest.fixture
-def vat_country(db):
+def vat_country(db, json_success):
     from django_prices_vatlayer.models import Vat
-    data = {"country_name": "Austria", "standard_rate": 20,
-            "reduced_rates": {"foodstuffs": 10, "books": 10}}
+    data = json_success['rates']['AT']
     return Vat.objects.create(country_code='AT', data=data)
