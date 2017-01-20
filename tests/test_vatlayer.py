@@ -12,6 +12,12 @@ from django_prices_vatlayer.european_vat import EuropeanVAT
 from django_prices_vatlayer.models import Vat
 
 
+@pytest.fixture
+def vat_country(db, json_success):
+    data = json_success['rates']['AT']
+    return Vat.objects.create(country_code='AT', data=data)
+
+
 def test_validate_data(json_error, json_success):
     with pytest.raises(ImproperlyConfigured):
         utils.validate_data(json_error)
