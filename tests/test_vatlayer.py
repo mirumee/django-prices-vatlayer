@@ -88,18 +88,13 @@ def test_european_vat_calculate_tax_valid(vat_country):
 
 
 @pytest.mark.django_db
-def test_european_vat_apply(vat_country, vat_without_rates):
-    vat_books = EuropeanVAT('AT', 'books')
+@pytest.mark.parametrize('european_vat, gross',
+                         [(EuropeanVAT('AT', 'books'), 121),
+                          (EuropeanVAT('TT', 'books'), 110),
+                          (EuropeanVAT('AU', 'books'), 110)])
+def test_european_vat_apply(vat_country, vat_without_rates,
+                            european_vat, gross):
     price = Price(net=100, gross=110)
-    tax_value = vat_books.apply(price)
-    assert tax_value.gross == 121
 
-    vat_wrong_country = EuropeanVAT('TT', 'books')
-
-    tax_value = vat_wrong_country.apply(price)
-    assert tax_value.gross == price.gross
-
-    vat_without_rates = EuropeanVAT('AU', 'books')
-
-    tax_value = vat_without_rates.apply(price)
-    assert tax_value == price
+    tax_value = european_vat.apply(price)
+    assert tax_value.gross == gross
