@@ -5,7 +5,7 @@ from prices import Price
 from decimal import Decimal
 import pytest
 
-from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
+from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 
 from django_prices_vatlayer import utils
