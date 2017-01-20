@@ -19,3 +19,6 @@ class EuropeanVAT(Tax):
             return super(EuropeanVAT, self).apply(price_obj)
         except (ObjectDoesNotExist, KeyError):
             return price_obj
+
+    def __repr__(self):
+        return 'EuropeanVat(%s, %s)' % (self.country_code, self.rate_name)
