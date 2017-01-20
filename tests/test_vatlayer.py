@@ -23,10 +23,12 @@ def vat_without_rates(db):
     return Vat.objects.create(country_code='AU', data={})
 
 
-def test_validate_data(json_error, json_success):
+def test_validate_data_invalid(json_error):
     with pytest.raises(ImproperlyConfigured):
         utils.validate_data(json_error)
 
+
+def test_validate_data_valid(json_success):
     assert utils.validate_data(json_success) is None
 
 
