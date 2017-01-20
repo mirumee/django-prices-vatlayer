@@ -2,7 +2,7 @@ import requests
 from decimal import Decimal
 
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.utils import six
 
 from .models import EuropeanVatRates
@@ -38,10 +38,15 @@ def create_objects_from_json(json_data):
 
 
 def get_tax_for_country(country_code, rate_name):
-    country_vat = EuropeanVatRates.objects.get(country_code=country_code)
-    reduced_rates = country_vat.data['reduced_rates']
+    try:
+        country_vat = EuropeanVatRates.objects.get(country_code=country_code)
+        reduced_rates = country_vat.data['reduced_rates']
+        standard_rate = country_vat.data['standard_rate']
+    except (KeyError, ObjectDoesNotExist):
+        return None
+
     try:
         rate = reduced_rates[rate_name]
     except KeyError:
-        rate = country_vat.data['standard_rate']
+        rate = standard_rate
     return Decimal(rate)

@@ -67,8 +67,8 @@ def test_get_tax_for_country(vat_country, rate_name, expected):
 
 @pytest.mark.django_db
 def test_get_tax_for_country_error():
-    with pytest.raises(ObjectDoesNotExist):
-        utils.get_tax_for_country('XX', 'rate name')
+    rate = utils.get_tax_for_country('XX', 'rate name')
+    assert rate is None
 
 
 @pytest.mark.django_db
@@ -86,14 +86,14 @@ def test_get_vat_rates_command(monkeypatch, get_european_vat_rates_error):
 
 
 @pytest.mark.django_db
-@pytest.mark.parametrize('european_vat,error',
-                         [(EuropeanVAT('TT', 'books'), ObjectDoesNotExist),
-                          (EuropeanVAT('AU', 'books'), KeyError)])
-def test_european_vat_calculate_tax(vat_without_rates, european_vat, error):
+@pytest.mark.parametrize('european_vat',
+                         [EuropeanVAT('TT', 'books'),
+                          EuropeanVAT('AU', 'books')])
+def test_european_vat_calculate_tax(vat_without_rates, european_vat):
     price = Price(net=100)
 
-    with pytest.raises(error):
-        tax_value = european_vat.calculate_tax(price)
+    tax_value = european_vat.calculate_tax(price)
+    assert tax_value == 0
 
 
 @pytest.mark.django_db
