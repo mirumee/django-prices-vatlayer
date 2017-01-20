@@ -1,0 +1,18 @@
+language: python
+python:
+  - 2.7
+  - 3.4
+  - 3.5
+install:
+  - python setup.py install
+  - pip install pytest-cov
+script: py.test --cov=django_prices_vatlayer
+
+env:
+  global:
+    - DJANGO_SETTINGS_MODULE=tests.settings
+    - DATABASE_URL='postgres://postgres@localhost:5432/django-prices-vatlayer'
+
+addons:
+  services:
+    - postgresql
