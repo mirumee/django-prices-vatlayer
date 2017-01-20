@@ -4,7 +4,8 @@ import dj_database_url
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgres://vat:vat@localhost:5432/vat', conn_max_age=600)
+        default='postgres://postgres@localhost:5432/django-prices-vatlayer',
+        conn_max_age=600)
 }
 
 SECRET_KEY = 'irrelevant'
