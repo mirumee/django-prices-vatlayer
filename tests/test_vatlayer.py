@@ -1,7 +1,7 @@
 import django
 django.setup()
 
-from prices import Price
+from prices import Price, PriceRange
 from decimal import Decimal
 import pytest
 
@@ -9,7 +9,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 
 from django_prices_vatlayer import utils
-from django_prices_vatlayer.european_vat import EuropeanVAT
+from django_prices_vatlayer.european_vat import EuropeanVAT, get_price_with_vat
 from django_prices_vatlayer.models import EuropeanVatRate
 
 
@@ -115,3 +115,14 @@ def test_european_vat_apply(vat_country, vat_without_rates,
 
     tax_value = european_vat.apply(price)
     assert tax_value.gross == gross
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    'price, expected',
+    [(Price(net=100, gross=110), Price(net=100, gross=121)),
+     (PriceRange(Price(net=100, gross=110), Price(net=200, gross=220)),
+      PriceRange(Price(net=100, gross=121), Price(net=200, gross=242)))])
+def test_get_price_with_vat(vat_country, price, expected):
+    price_with_vat = get_price_with_vat('AT', 'books', price)
+    assert price_with_vat == expected
