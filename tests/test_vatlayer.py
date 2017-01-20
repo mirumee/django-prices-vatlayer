@@ -10,18 +10,18 @@ from django.core.management import call_command
 
 from django_prices_vatlayer import utils
 from django_prices_vatlayer.european_vat import EuropeanVAT
-from django_prices_vatlayer.models import EuropeanVatRates
+from django_prices_vatlayer.models import EuropeanVatRate
 
 
 @pytest.fixture
 def vat_country(db, json_success):
     data = json_success['rates']['AT']
-    return EuropeanVatRates.objects.create(country_code='AT', data=data)
+    return EuropeanVatRate.objects.create(country_code='AT', data=data)
 
 
 @pytest.fixture
 def vat_without_rates(db):
-    return EuropeanVatRates.objects.create(country_code='AU', data={})
+    return EuropeanVatRate.objects.create(country_code='AU', data={})
 
 
 @pytest.fixture
@@ -48,13 +48,13 @@ def test_validate_data_valid(json_success):
 @pytest.mark.django_db
 def test_create_objects_from_json(json_error, json_success):
 
-    vat_counts = EuropeanVatRates.objects.count()
+    vat_counts = EuropeanVatRate.objects.count()
 
     with pytest.raises(ImproperlyConfigured):
         utils.create_objects_from_json(json_error)
 
     utils.create_objects_from_json(json_success)
-    assert vat_counts + 1 == EuropeanVatRates.objects.count()
+    assert vat_counts + 1 == EuropeanVatRate.objects.count()
 
 
 @pytest.mark.parametrize('rate_name,expected',
@@ -75,7 +75,7 @@ def test_get_tax_for_country_error():
 def test_get_vat_rates_command(monkeypatch, get_european_vat_rates_success):
 
     call_command('get_vat_rates')
-    assert 1 == EuropeanVatRates.objects.count()
+    assert 1 == EuropeanVatRate.objects.count()
 
 
 @pytest.mark.django_db

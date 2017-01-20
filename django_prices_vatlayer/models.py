@@ -5,7 +5,7 @@ from django.utils.translation import pgettext_lazy
 
 
 @python_2_unicode_compatible
-class EuropeanVatRates(models.Model):
+class EuropeanVatRate(models.Model):
     country_code = models.CharField(
         pgettext_lazy('Vat field', 'country code'), max_length=2)
     data = JSONField(pgettext_lazy('Vat field', 'data'))
