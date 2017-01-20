@@ -28,9 +28,9 @@ setup(
     packages=['django_prices_vatlayer'],
     include_package_data=True,
     classifiers=CLASSIFIERS,
-    install_requires=['Django', 'requests'],
+    install_requires=['Django', 'requests', 'dj-database-url'],
     platforms=['any'],
     test_suite='django_prices_vatlayer.tests',
-    tests_require=['pytest', 'pytest-django', 'dj-database-url'],
+    tests_require=['pytest', 'pytest-django'],
     zip_safe=False)
 
