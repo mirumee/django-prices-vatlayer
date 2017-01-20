@@ -32,7 +32,6 @@ def test_create_objects_from_json(json_error, json_success):
 
     with pytest.raises(ImproperlyConfigured):
         utils.create_objects_from_json(json_error)
-    assert vat_counts == Vat.objects.count()
 
     utils.create_objects_from_json(json_success)
     assert vat_counts + 1 == Vat.objects.count()
