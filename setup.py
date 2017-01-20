@@ -29,9 +29,9 @@ setup(
     include_package_data=True,
     classifiers=CLASSIFIERS,
     install_requires=['Django>=1.8', 'requests', 'dj-database-url', 'psycopg2',
-                      'django-prices>=0.3.4', 'prices>=0.5.2'],
+                      'django-prices>=0.3.4', 'prices>=0.5.2', 'pytest-django'],
     platforms=['any'],
     test_suite='django_prices_vatlayer.tests',
-    tests_require=['pytest', 'pytest-django'],
+    tests_require=['pytest'],
     zip_safe=False)
 
