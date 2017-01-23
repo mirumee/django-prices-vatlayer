@@ -5,7 +5,7 @@ from .utils import get_tax_for_country
 
 
 class EuropeanVAT(Tax):
-    def __init__(self, country_code, rate_name):
+    def __init__(self, country_code, rate_name=None):
         self.country_code = country_code
         self.rate_name = rate_name
 
@@ -19,14 +19,14 @@ class EuropeanVAT(Tax):
         return 'EuropeanVat(%s, %s)' % (self.country_code, self.rate_name)
 
 
-def apply_vat(country_code, rate_name, price):
+def apply_vat(country_code, price, rate_name=None):
     country_vat = EuropeanVAT(country_code, rate_name)
     return country_vat.apply(price)
 
 
 def get_price_with_vat(country_code, rate_name, price):
     if isinstance(price, PriceRange):
-        min_price = apply_vat(country_code, rate_name, price.min_price)
-        max_price = apply_vat(country_code, rate_name, price.max_price)
+        min_price = apply_vat(country_code, price.min_price, rate_name)
+        max_price = apply_vat(country_code, price.max_price, rate_name)
         return PriceRange(min_price, max_price)
-    return apply_vat(country_code, rate_name, price)
+    return apply_vat(country_code, price, rate_name)

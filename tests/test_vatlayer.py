@@ -111,7 +111,7 @@ def test_european_vat_calculate_tax_valid(vat_country):
                           (EuropeanVAT('TT', 'books'), 110),
                           (EuropeanVAT('AU', 'books'), 110)])
 def test_european_vat_apply(vat_country, vat_without_rates,
-                            european_vat, gross):
+                            gross, european_vat):
     price = Price(net=100, gross=110)
 
     tax_value = european_vat.apply(price)
