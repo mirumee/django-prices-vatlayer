@@ -12,6 +12,7 @@ env:
   global:
     - DATABASE_URL='postgres://postgres@localhost:5432/django-prices-vatlayer'
 
+services:
+  - postgresql
 addons:
-  services:
-    - postgresql: "9.4"
+  postgresql: "9.4"
