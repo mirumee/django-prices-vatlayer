@@ -128,3 +128,10 @@ def test_european_vat_apply(vat_country, vat_without_rates,
 def test_get_price_with_vat(vat_country, price, expected):
     price_with_vat = get_price_with_vat('AT', price, 'books')
     assert price_with_vat == expected
+
+
+@pytest.mark.django_db
+def test_get_price_with_vat_without_rate_name(vat_country):
+    price = Price(net=100, gross=110)
+    price_with_vat = get_price_with_vat('AT', price)
+    assert price_with_vat == Price(net=100, gross=132)
