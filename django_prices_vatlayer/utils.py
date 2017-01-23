@@ -21,7 +21,7 @@ def validate_data(json_data):
         raise ImproperlyConfigured(info)
 
 
-def get_european_vat_rates():
+def fetch_vat_rates():
     response = requests.get(RATINGS_URL, params={'access_key': ACCESS_KEY})
     return response.json()
 
