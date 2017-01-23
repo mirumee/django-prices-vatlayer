@@ -5,11 +5,11 @@
 from prices import Price
 from django_prices_vatlayer.european_vat import get_price_with_vat
 
-price_with_vat = get_price_with_vat('SK', Price(10, currency='USD'))
+price_with_vat = get_price_with_vat('SK', Price(10, currency='USD'), 'books')
 print(price_with_vat)
-# Price(net='10', gross='12', currency='USD')
+# Price(net='10', gross='11', currency='USD')
 print(price_with_vat.history)
-# (Price('10', currency='USD') | EuropeanVat(SK, None))
+# (Price('10', currency='USD') | EuropeanVat(SK, rate_name=books, vat_rate=10))
 ```
 
 Installation
