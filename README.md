@@ -1,5 +1,5 @@
 # django-prices-vatlayer
-Vatlayer API support for django-prices
+[Vatlayer API](https://vatlayer.com/) support for django-prices
 
 ```python
 from prices import Price
