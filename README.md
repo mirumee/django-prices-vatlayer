@@ -25,8 +25,8 @@ Set following settings in your project's settings:
  * `VATLAYER_ACCESS_KEY`
 
 
-Updating exchange rates
+Update vat rates
 =======================
-Fetch current rates from API with `./manage.py get_vat_rates`
+Fetch current vat rates from API with `./manage.py get_vat_rates`
 
 Schedule this task in cron job or in celery, to be always up to date with exchange rates
