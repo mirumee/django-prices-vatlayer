@@ -24,6 +24,7 @@ setup(
     author_email='hello@mirumee.com',
     description='vatlayer.org support for django',
     license='BSD',
+    version='0.1.0',
     url='https://github.com/mirumee/django-prices-vatlayer',
     packages=['django_prices_vatlayer'],
     include_package_data=True,
@@ -34,4 +35,3 @@ setup(
     test_suite='django_prices_vatlayer.tests',
     tests_require=['pytest'],
     zip_safe=False)
-
