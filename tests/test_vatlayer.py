@@ -1,7 +1,7 @@
 import django
 django.setup()
 
-from prices import Price, PriceRange
+from prices import Price
 from decimal import Decimal
 import pytest
 
@@ -9,7 +9,6 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 
 from django_prices_vatlayer import utils
-from django_prices_vatlayer.european_vat import EuropeanVAT
 from django_prices_vatlayer.models import VAT
 
 
@@ -84,37 +83,3 @@ def test_get_vat_rates_command(monkeypatch, fetch_vat_rates_error):
 
     with pytest.raises(ImproperlyConfigured):
         call_command('get_vat_rates')
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize('european_vat',
-                         [EuropeanVAT('TT', rate_name='books'),
-                          EuropeanVAT('AU', rate_name='books')])
-def test_european_vat_calculate_tax(vat_without_rates, european_vat):
-    price = Price(net=100)
-
-    tax_value = european_vat.calculate_tax(price)
-    assert tax_value == 0
-
-
-@pytest.mark.django_db
-def test_european_vat_calculate_tax_valid(vat_country):
-    vat_books = EuropeanVAT('AT', Decimal(10), rate_name='books')
-    price = Price(net=100)
-    tax_value = vat_books.calculate_tax(price)
-    assert tax_value == 10
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize('european_vat, gross',
-                         [(EuropeanVAT('AT', Decimal(10), rate_name='books'),
-                           121),
-                          (EuropeanVAT('TT', rate_name='books'), 110),
-                          (EuropeanVAT('AU', rate_name='books'), 110),
-                          (EuropeanVAT('AT', Decimal(20)), 132)])
-def test_european_vat_apply(vat_country, vat_without_rates,
-                            gross, european_vat):
-    price = Price(net=100, gross=110)
-
-    tax_value = european_vat.apply(price)
-    assert tax_value.gross == gross
