@@ -109,7 +109,8 @@ def test_european_vat_calculate_tax_valid(vat_country):
 @pytest.mark.parametrize('european_vat, gross',
                          [(EuropeanVAT('AT', 'books'), 121),
                           (EuropeanVAT('TT', 'books'), 110),
-                          (EuropeanVAT('AU', 'books'), 110)])
+                          (EuropeanVAT('AU', 'books'), 110),
+                          (EuropeanVAT('AT'), 132)])
 def test_european_vat_apply(vat_country, vat_without_rates,
                             gross, european_vat):
     price = Price(net=100, gross=110)
