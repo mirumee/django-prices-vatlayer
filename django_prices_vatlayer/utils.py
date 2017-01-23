@@ -49,7 +49,6 @@ def get_tax_for_country(country_code, rate_name=None):
     if rate_name is not None and rate_name in six.iterkeys(reduced_rates):
         rate = reduced_rates[rate_name]
 
-    rate = Decimal(rate) / 100
     tax_name = '%s - %s' % (country_code, rate_name)
 
-    return LinearTax(rate, tax_name)
+    return LinearTax(rate/100, tax_name)
