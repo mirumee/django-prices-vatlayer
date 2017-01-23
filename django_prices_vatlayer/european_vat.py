@@ -8,15 +8,17 @@ class EuropeanVAT(Tax):
     def __init__(self, country_code, rate_name=None):
         self.country_code = country_code
         self.rate_name = rate_name
+        self.vat_rate = None
 
     def calculate_tax(self, price_obj):
-        vat_rate = get_tax_for_country(self.country_code, self.rate_name)
-        if vat_rate is None:
+        self.vat_rate = get_tax_for_country(self.country_code, self.rate_name)
+        if self.vat_rate is None:
             return Decimal(0)
-        return (vat_rate * price_obj.gross) / 100
+        return (self.vat_rate * price_obj.gross) / 100
 
     def __repr__(self):
-        return 'EuropeanVat(%s, %s)' % (self.country_code, self.rate_name)
+        return 'EuropeanVat(%s, rate_name=%s, vat_rate=%s)' % (
+            self.country_code, self.rate_name, self.vat_rate)
 
 
 def apply_vat(country_code, price, rate_name=None):
