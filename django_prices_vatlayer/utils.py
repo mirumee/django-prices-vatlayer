@@ -1,4 +1,3 @@
-from decimal import Decimal
 from prices import LinearTax
 import requests
 

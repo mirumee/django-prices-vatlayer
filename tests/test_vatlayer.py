@@ -2,7 +2,6 @@ import django
 django.setup()
 
 from prices import LinearTax
-from decimal import Decimal
 import pytest
 
 from django.core.exceptions import ImproperlyConfigured
