@@ -24,7 +24,7 @@ def apply_vat(country_code, price, rate_name=None):
     return country_vat.apply(price)
 
 
-def get_price_with_vat(country_code, rate_name, price):
+def get_price_with_vat(country_code, price, rate_name=None):
     if isinstance(price, PriceRange):
         min_price = apply_vat(country_code, price.min_price, rate_name)
         max_price = apply_vat(country_code, price.max_price, rate_name)

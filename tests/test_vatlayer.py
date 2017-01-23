@@ -126,5 +126,5 @@ def test_european_vat_apply(vat_country, vat_without_rates,
      (PriceRange(Price(net=100, gross=110), Price(net=200, gross=220)),
       PriceRange(Price(net=100, gross=121), Price(net=200, gross=242)))])
 def test_get_price_with_vat(vat_country, price, expected):
-    price_with_vat = get_price_with_vat('AT', 'books', price)
+    price_with_vat = get_price_with_vat('AT', price, 'books')
     assert price_with_vat == expected
