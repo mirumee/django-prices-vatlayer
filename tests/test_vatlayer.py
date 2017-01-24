@@ -1,6 +1,3 @@
-import django
-django.setup()
-
 from prices import LinearTax
 import pytest
 
