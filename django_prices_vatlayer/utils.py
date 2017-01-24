@@ -13,12 +13,18 @@ except AttributeError:
     raise ImproperlyConfigured('VATLAYER_ACCESS_KEY is required')
 
 RATINGS_URL = 'http://apilayer.net/api/rate_list'
+TYPES_URL = 'http://apilayer.net/api/types'
 
 
 def validate_data(json_data):
     if not json_data['success']:
         info = json_data['error']['info']
         raise ImproperlyConfigured(info)
+
+
+def fetch_rates_types():
+    response = requests.get(TYPES_URL, params={'access_key': ACCESS_KEY})
+    return response.json()
 
 
 def fetch_vat_rates():
