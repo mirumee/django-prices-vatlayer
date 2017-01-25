@@ -54,6 +54,7 @@ def test_create_objects_from_json(json_error, json_success):
 
 @pytest.mark.parametrize('rate_name,expected',
                          [('medicine', LinearTax(20/100, 'AT - medicine')),
+                          ('standard', LinearTax(20/100, 'AT - standard')),
                           ('books', LinearTax(10/100, 'AT - books')),
                           (None, LinearTax(20/100, 'AT - None'))])
 def test_get_tax_for_country(vat_country, rate_name, expected):
