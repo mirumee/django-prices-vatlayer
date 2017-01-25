@@ -1,4 +1,5 @@
-from django.contrib.postgres.fields import JSONField
+from jsonfield import JSONField
+
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import pgettext_lazy
