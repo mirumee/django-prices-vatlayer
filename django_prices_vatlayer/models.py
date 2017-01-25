@@ -13,3 +13,7 @@ class VAT(models.Model):
 
     def __str__(self):
         return self.country_code
+
+
+class TypeRates(models.Model):
+    types = JSONField(pgettext_lazy('Vat field', 'types'))
