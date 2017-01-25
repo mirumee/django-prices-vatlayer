@@ -15,5 +15,5 @@ class VAT(models.Model):
         return self.country_code
 
 
-class TypeRates(models.Model):
+class RateTypes(models.Model):
     types = JSONField(pgettext_lazy('Vat field', 'types'))

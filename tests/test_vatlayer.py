@@ -5,7 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 
 from django_prices_vatlayer import utils
-from django_prices_vatlayer.models import VAT, TypeRates
+from django_prices_vatlayer.models import VAT, RateTypes
 
 
 @pytest.fixture
@@ -55,10 +55,10 @@ def test_create_objects_from_json(json_error, json_success):
 @pytest.mark.django_db
 def test_save_vat_rate_types(json_types_success):
     utils.save_vat_rate_types(json_types_success)
-    assert 1 == TypeRates.objects.count()
+    assert 1 == RateTypes.objects.count()
 
     utils.save_vat_rate_types(json_types_success)
-    assert 1 == TypeRates.objects.count()
+    assert 1 == RateTypes.objects.count()
 
 
 @pytest.mark.parametrize('rate_name,expected',

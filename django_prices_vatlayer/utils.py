@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.utils import six
 
-from .models import VAT, TypeRates
+from .models import VAT, RateTypes
 
 try:
     ACCESS_KEY = settings.VATLAYER_ACCESS_KEY
@@ -39,12 +39,7 @@ def save_vat_rate_types(json_data):
     validate_data(json_data)
 
     types = json_data['types']
-    if not TypeRates.objects.exists():
-        TypeRates.objects.create(types=types)
-    else:
-        type_rates = TypeRates.objects.last()
-        type_rates.types = types
-        type_rates.save()
+    RateTypes.objects.update_or_create(id=1, defaults={'types': types})
 
 
 def create_objects_from_json(json_data):
