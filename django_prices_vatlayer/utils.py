@@ -27,7 +27,7 @@ def fetch_from_api(url):
     return response.json()
 
 
-def fetch_rates_types():
+def fetch_rate_types():
     return fetch_from_api(TYPES_URL)
 
 

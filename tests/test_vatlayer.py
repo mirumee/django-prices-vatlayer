@@ -31,6 +31,18 @@ def fetch_vat_rates_error(monkeypatch, json_error):
                         lambda: json_error)
 
 
+@pytest.fixture
+def fetch_rate_types_success(monkeypatch, json_types_success):
+    monkeypatch.setattr(utils, 'fetch_rate_types',
+                        lambda: json_types_success)
+
+
+@pytest.fixture
+def fetch_rate_types_error(monkeypatch, json_error):
+    monkeypatch.setattr(utils, 'fetch_rate_types',
+                        lambda: json_error)
+
+
 def test_validate_data_invalid(json_error):
     with pytest.raises(ImproperlyConfigured):
         utils.validate_data(json_error)
@@ -79,14 +91,24 @@ def test_get_tax_for_country_error():
 
 
 @pytest.mark.django_db
-def test_get_vat_rates_command(monkeypatch, fetch_vat_rates_success):
+def test_get_vat_rates_command(fetch_vat_rates_success,
+                               fetch_rate_types_success):
 
     call_command('get_vat_rates')
     assert 1 == VAT.objects.count()
+    assert 1 == RateTypes.objects.count()
 
 
 @pytest.mark.django_db
-def test_get_vat_rates_command(monkeypatch, fetch_vat_rates_error):
+def test_get_vat_rates_command(fetch_vat_rates_error, fetch_rate_types_success):
+
+    with pytest.raises(ImproperlyConfigured):
+        call_command('get_vat_rates')
+
+
+@pytest.mark.django_db
+def test_get_vat_rates_command(fetch_vat_rates_success,
+                               fetch_rate_types_error):
 
     with pytest.raises(ImproperlyConfigured):
         call_command('get_vat_rates')
