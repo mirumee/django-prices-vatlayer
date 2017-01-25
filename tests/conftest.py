@@ -23,3 +23,9 @@ def json_success():
         'AT': {'country_name': 'Austria', 'standard_rate': 20,
                'reduced_rates': {'foodstuffs': 10, 'books': 10}}}}
     return data
+
+
+@pytest.fixture
+def json_types_success():
+    data = {'success': True, 'types':['books', 'wine', 'medicine']}
+    return data
