@@ -22,14 +22,17 @@ def validate_data(json_data):
         raise ImproperlyConfigured(info)
 
 
-def fetch_rates_types():
-    response = requests.get(TYPES_URL, params={'access_key': ACCESS_KEY})
+def fetch_from_api(url):
+    response = requests.get(url, params={'access_key': ACCESS_KEY})
     return response.json()
+
+
+def fetch_rates_types():
+    return fetch_from_api(TYPES_URL)
 
 
 def fetch_vat_rates():
-    response = requests.get(RATINGS_URL, params={'access_key': ACCESS_KEY})
-    return response.json()
+    return fetch_from_api(RATINGS_URL)
 
 
 def create_objects_from_json(json_data):
