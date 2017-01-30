@@ -20,6 +20,11 @@ def vat_without_rates(db):
 
 
 @pytest.fixture
+def rate_type(db):
+    return RateTypes.objects.create(types=['books'])
+
+
+@pytest.fixture
 def fetch_vat_rates_success(monkeypatch, json_success):
     monkeypatch.setattr(utils, 'fetch_vat_rates',
                         lambda: json_success)
@@ -112,3 +117,8 @@ def test_get_vat_rates_command(fetch_vat_rates_success,
 
     with pytest.raises(ImproperlyConfigured):
         call_command('get_vat_rates')
+
+
+@pytest.mark.django_db
+def test_singleton(rate_type):
+    assert RateTypes.objects.singleton() == rate_type

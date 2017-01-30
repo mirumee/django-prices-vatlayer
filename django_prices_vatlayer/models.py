@@ -18,11 +18,11 @@ class VAT(models.Model):
         return self.country_code
 
 
-class RateTypesManager(models.Manager):
+class RateTypesQuerySet(models.QuerySet):
     def singleton(self):
         return self.filter(id=DEFAULT_TYPES_INSTANCE_ID).first()
 
 
 class RateTypes(models.Model):
     types = JSONField(pgettext_lazy('Vat field', 'types'))
-    objects = RateTypesManager()
+    objects = RateTypesQuerySet.as_manager()
