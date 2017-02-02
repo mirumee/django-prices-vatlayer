@@ -28,7 +28,7 @@ def json_success():
 @pytest.fixture
 def json_success_without_reduced_rates():
     data = {'success': True, 'rates': {
-        'AT': {'country_name': 'Austria', 'standard_rate': 20,
+        'AZ': {'country_name': 'Austria', 'standard_rate': 20,
                'reduced_rates': None}}}
     return data
 

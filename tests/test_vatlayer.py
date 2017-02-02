@@ -21,8 +21,8 @@ def vat_without_rates(db):
 
 @pytest.fixture
 def vat_without_reduced_rates(db, json_success_without_reduced_rates):
-    data = json_success_without_reduced_rates['rates']['AT']
-    return VAT.objects.create(country_code='AU', data=data)
+    data = json_success_without_reduced_rates['rates']['AZ']
+    return VAT.objects.create(country_code='AZ', data=data)
 
 
 @pytest.fixture
