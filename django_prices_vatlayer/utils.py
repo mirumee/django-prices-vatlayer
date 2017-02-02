@@ -62,7 +62,7 @@ def get_tax_for_country(country_code, rate_name=None):
         return None
 
     rate = standard_rate
-    if rate_name is not None and rate_name in six.iterkeys(reduced_rates):
+    if rate_name and reduced_rates and rate_name in six.iterkeys(reduced_rates):
         rate = reduced_rates[rate_name]
 
     tax_name = '%s - %s' % (country_code, rate_name)

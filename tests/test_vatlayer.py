@@ -103,6 +103,16 @@ def test_get_tax_for_country(vat_country, rate_name, expected):
     assert rate == expected
 
 
+@pytest.mark.parametrize('rate_name,expected',
+                         [('medicine', LinearTax(20/100, 'AZ - medicine')),
+                          ('standard', LinearTax(20/100, 'AZ - standard')),
+                          (None, LinearTax(20/100, 'AZ - None'))])
+def test_get_tax_for_country(vat_without_reduced_rates, rate_name, expected):
+    country_code = vat_without_reduced_rates.country_code
+    rate = utils.get_tax_for_country(country_code, rate_name)
+    assert rate == expected
+
+
 @pytest.mark.django_db
 def test_get_tax_for_country_error():
     rate = utils.get_tax_for_country('XX', 'rate name')
