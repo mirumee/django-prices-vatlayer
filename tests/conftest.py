@@ -27,5 +27,5 @@ def json_success():
 
 @pytest.fixture
 def json_types_success():
-    data = {'success': True, 'types':['books', 'wine', 'medicine']}
+    data = {'success': True, 'types': ['books', 'wine', 'medicine']}
     return data
