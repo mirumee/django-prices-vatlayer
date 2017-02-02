@@ -78,11 +78,9 @@ def test_create_objects_from_json_error(json_error, json_success):
 @pytest.mark.django_db
 def test_create_objects_from_json_success(
         json_success, json_success_without_reduced_rates):
-    vat_counts = VAT.objects.count()
-
     for json_dict in [json_success, json_success_without_reduced_rates]:
         utils.create_objects_from_json(json_dict)
-    assert vat_counts + 2 == 2
+    assert VAT.objects.count() == 2
 
 
 @pytest.mark.django_db
