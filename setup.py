@@ -32,7 +32,7 @@ setup(
               'django_prices_vatlayer.management.commands'],
     include_package_data=True,
     classifiers=CLASSIFIERS,
-    install_requires=['Django>=1.8', 'requests', 'dj-database-url', 'psycopg2',
+    install_requires=['Django>=1.8', 'requests', 'dj-database-url',
                       'django-prices>=0.3.4', 'prices>=0.5.2', 'pytest-django',
                       'jsonfield'],
     platforms=['any'],
