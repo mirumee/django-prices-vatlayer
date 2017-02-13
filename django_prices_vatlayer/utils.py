@@ -12,8 +12,11 @@ try:
 except AttributeError:
     raise ImproperlyConfigured('VATLAYER_ACCESS_KEY is required')
 
-RATINGS_URL = 'http://apilayer.net/api/rate_list'
-TYPES_URL = 'http://apilayer.net/api/types'
+USE_HTTPS = getattr(settings, 'USE_HTTPS', False)
+PROTOCOL = 'https://' if USE_HTTPS else 'http://'
+
+RATINGS_URL = PROTOCOL + 'apilayer.net/api/rate_list'
+TYPES_URL = PROTOCOL + 'apilayer.net/api/types'
 
 
 def validate_data(json_data):
