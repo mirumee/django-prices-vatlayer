@@ -7,12 +7,3 @@ install:
   - python setup.py install
   - pip install pytest-cov
 script: py.test --cov=django_prices_vatlayer
-
-env:
-  global:
-    - DATABASE_URL='postgres://postgres@localhost:5432/django-prices-vatlayer'
-
-services:
-  - postgresql
-addons:
-  postgresql: "9.4"
