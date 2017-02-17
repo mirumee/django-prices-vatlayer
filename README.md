@@ -23,7 +23,7 @@ Then add `'django_prices_vatlayer'` to your `INSTALLED_APPS`.
 Set following settings in your project's settings:
 
  * `VATLAYER_ACCESS_KEY`
- *  To avoid possible MITM attacks, Paid Customer might force secure connection by setting `USE_HTTPS` to `True`?
+ *  To avoid possible MITM attacks, Paid Customer might force secure connection by overriding `VATLAYER_API` endpoint
 
 Update vat rates
 =======================
