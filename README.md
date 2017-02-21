@@ -3,13 +3,14 @@
 
 ```python
 from prices import Price
-from django_prices_vatlayer.european_vat import get_price_with_vat
+from django_prices_vatlayer.utils import get_tax_for_country
 
-price_with_vat = get_price_with_vat('SK', Price(10, currency='USD'), 'books')
+tax_for_country = get_tax_for_country('SK', 'books')
+price_with_vat = tax_for_country.apply(Price(10, currency='USD'))
 print(price_with_vat)
 # Price(net='10', gross='11', currency='USD')
 print(price_with_vat.history)
-# (Price('10', currency='USD') | EuropeanVat(SK, rate_name=books, vat_rate=10))
+# (Price('10', currency='USD') | LinearTax(SK, rate_name=books, vat_rate=10))
 ```
 
 Installation
