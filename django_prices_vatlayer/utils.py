@@ -12,8 +12,11 @@ try:
 except AttributeError:
     raise ImproperlyConfigured('VATLAYER_ACCESS_KEY is required')
 
+PROTOCOL = 'http://' if settings.DEBUG else 'https://'
+DEFAULT_URL = PROTOCOL + 'apilayer.net/api/'
+
 VATLAYER_API = getattr(
-    settings, 'VATLAYER_API', 'http://apilayer.net/api/')
+    settings, 'VATLAYER_API', DEFAULT_URL)
 
 RATINGS_URL = 'rate_list'
 TYPES_URL = 'types'
