@@ -1,3 +1,4 @@
+from __future__ import division
 from prices import LinearTax
 import pytest
 
