@@ -1,10 +1,7 @@
-from __future__ import division
-from prices import LinearTax
 import requests
-
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
-from django.utils import six
+from prices import flat_tax
 
 from .models import VAT, RateTypes, DEFAULT_TYPES_INSTANCE_ID
 
@@ -16,8 +13,7 @@ except AttributeError:
 PROTOCOL = 'http://' if settings.DEBUG else 'https://'
 DEFAULT_URL = PROTOCOL + 'apilayer.net/api/'
 
-VATLAYER_API = getattr(
-    settings, 'VATLAYER_API', DEFAULT_URL)
+VATLAYER_API = getattr(settings, 'VATLAYER_API', DEFAULT_URL)
 
 RATINGS_URL = 'rate_list'
 TYPES_URL = 'types'
@@ -47,8 +43,8 @@ def save_vat_rate_types(json_data):
     validate_data(json_data)
 
     types = json_data['types']
-    RateTypes.objects.update_or_create(id=DEFAULT_TYPES_INSTANCE_ID,
-                                       defaults={'types': types})
+    RateTypes.objects.update_or_create(
+        id=DEFAULT_TYPES_INSTANCE_ID, defaults={'types': types})
 
 
 def create_objects_from_json(json_data):
@@ -56,12 +52,12 @@ def create_objects_from_json(json_data):
 
     # Handle proper response
     rates = json_data['rates']
-    for code, value in six.iteritems(rates):
+    for code, value in rates.items():
         VAT.objects.update_or_create(
-             country_code=code, defaults={'data': value})
+            country_code=code, defaults={'data': value})
 
 
-def get_tax_for_country(country_code, rate_name=None):
+def get_tax_rate_for_country(country_code, rate_name=None):
     try:
         country_vat = VAT.objects.get(country_code=country_code)
         reduced_rates = country_vat.data['reduced_rates']
@@ -70,9 +66,9 @@ def get_tax_for_country(country_code, rate_name=None):
         return None
 
     rate = standard_rate
-    if rate_name and reduced_rates and rate_name in six.iterkeys(reduced_rates):
+    if rate_name and reduced_rates and rate_name in reduced_rates.keys():
         rate = reduced_rates[rate_name]
 
     tax_name = '%s - %s' % (country_code, rate_name)
 
-    return LinearTax(rate/100, tax_name)
+    return tax_name, flat_tax(rate/100)

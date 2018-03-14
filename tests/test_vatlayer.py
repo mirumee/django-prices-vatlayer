@@ -1,12 +1,9 @@
-from __future__ import division
-from prices import LinearTax
 import pytest
-
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
-
 from django_prices_vatlayer import utils
 from django_prices_vatlayer.models import VAT, RateTypes
+from prices import LinearTax
 
 
 @pytest.fixture
@@ -33,26 +30,22 @@ def rate_type(db):
 
 @pytest.fixture
 def fetch_vat_rates_success(monkeypatch, json_success):
-    monkeypatch.setattr(utils, 'fetch_vat_rates',
-                        lambda: json_success)
+    monkeypatch.setattr(utils, 'fetch_vat_rates', lambda: json_success)
 
 
 @pytest.fixture
 def fetch_vat_rates_error(monkeypatch, json_error):
-    monkeypatch.setattr(utils, 'fetch_vat_rates',
-                        lambda: json_error)
+    monkeypatch.setattr(utils, 'fetch_vat_rates', lambda: json_error)
 
 
 @pytest.fixture
 def fetch_rate_types_success(monkeypatch, json_types_success):
-    monkeypatch.setattr(utils, 'fetch_rate_types',
-                        lambda: json_types_success)
+    monkeypatch.setattr(utils, 'fetch_rate_types', lambda: json_types_success)
 
 
 @pytest.fixture
 def fetch_rate_types_error(monkeypatch, json_error):
-    monkeypatch.setattr(utils, 'fetch_rate_types',
-                        lambda: json_error)
+    monkeypatch.setattr(utils, 'fetch_rate_types', lambda: json_error)
 
 
 def test_validate_data_invalid(json_error):
@@ -66,7 +59,6 @@ def test_validate_data_valid(json_success):
 
 @pytest.mark.django_db
 def test_create_objects_from_json_error(json_error, json_success):
-
     vat_counts = VAT.objects.count()
 
     with pytest.raises(ImproperlyConfigured):
@@ -93,21 +85,23 @@ def test_save_vat_rate_types(json_types_success):
     assert 1 == RateTypes.objects.count()
 
 
-@pytest.mark.parametrize('rate_name,expected',
-                         [('medicine', LinearTax(20/100, 'AT - medicine')),
-                          ('standard', LinearTax(20/100, 'AT - standard')),
-                          ('books', LinearTax(10/100, 'AT - books')),
-                          (None, LinearTax(20/100, 'AT - None'))])
+@pytest.mark.parametrize(
+    'rate_name,expected', [
+        ('medicine', LinearTax(20/100, 'AT - medicine')),
+        ('standard', LinearTax(20/100, 'AT - standard')),
+        ('books', LinearTax(10/100, 'AT - books')),
+        (None, LinearTax(20/100, 'AT - None'))])
 def test_get_tax_for_country(vat_country, rate_name, expected):
     country_code = vat_country.country_code
     rate = utils.get_tax_for_country(country_code, rate_name)
     assert rate == expected
 
 
-@pytest.mark.parametrize('rate_name,expected',
-                         [('medicine', LinearTax(20/100, 'AZ - medicine')),
-                          ('standard', LinearTax(20/100, 'AZ - standard')),
-                          (None, LinearTax(20/100, 'AZ - None'))])
+@pytest.mark.parametrize(
+    'rate_name,expected', [
+        ('medicine', LinearTax(20/100, 'AZ - medicine')),
+        ('standard', LinearTax(20/100, 'AZ - standard')),
+        (None, LinearTax(20/100, 'AZ - None'))])
 def test_get_tax_for_country(vat_without_reduced_rates, rate_name, expected):
     country_code = vat_without_reduced_rates.country_code
     rate = utils.get_tax_for_country(country_code, rate_name)
@@ -121,25 +115,23 @@ def test_get_tax_for_country_error():
 
 
 @pytest.mark.django_db
-def test_get_vat_rates_command(fetch_vat_rates_success,
-                               fetch_rate_types_success):
-
+def test_get_vat_rates_command(
+        fetch_vat_rates_success, fetch_rate_types_success):
     call_command('get_vat_rates')
     assert 1 == VAT.objects.count()
     assert 1 == RateTypes.objects.count()
 
 
 @pytest.mark.django_db
-def test_get_vat_rates_command(fetch_vat_rates_error, fetch_rate_types_success):
-
+def test_get_vat_rates_command(
+        fetch_vat_rates_error, fetch_rate_types_success):
     with pytest.raises(ImproperlyConfigured):
         call_command('get_vat_rates')
 
 
 @pytest.mark.django_db
-def test_get_vat_rates_command(fetch_vat_rates_success,
-                               fetch_rate_types_error):
-
+def test_get_vat_rates_command(
+        fetch_vat_rates_success, fetch_rate_types_error):
     with pytest.raises(ImproperlyConfigured):
         call_command('get_vat_rates')
 
