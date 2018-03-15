@@ -27,16 +27,12 @@ setup(
     version='1.0.0b1',
     url='https://github.com/mirumee/django-prices-vatlayer',
     packages=[
-        'django_prices_vatlayer',
-        'django_prices_vatlayer.migrations',
+        'django_prices_vatlayer', 'django_prices_vatlayer.migrations',
         'django_prices_vatlayer.management',
         'django_prices_vatlayer.management.commands'],
     include_package_data=True,
     classifiers=CLASSIFIERS,
     install_requires=[
-        'Django>=1.11', 'requests', 'dj-database-url', 'prices>=1.0.0',
-        'pytest-django', 'jsonfield'],
+        'Django>=1.11', 'prices>=1.0.0', 'requests', 'jsonfield'],
     platforms=['any'],
-    test_suite='django_prices_vatlayer.tests',
-    tests_require=['pytest'],
     zip_safe=False)
