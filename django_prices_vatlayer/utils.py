@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import requests
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
@@ -69,6 +71,15 @@ def get_tax_rate_for_country(country_code, rate_name=None):
     if rate_name and reduced_rates and rate_name in reduced_rates.keys():
         rate = reduced_rates[rate_name]
 
-    tax_name = '%s - %s' % (country_code, rate_name)
+    return Decimal(rate / 100)
 
-    return tax_name, flat_tax(rate/100)
+
+def get_tax_for_country(country_code, rate_name=None):
+    rate = get_tax_rate_for_country(country_code, rate_name)
+    if rate is None:
+        return None
+
+    def tax(base, keep_gross=False):
+        return flat_tax(base, rate, keep_gross=keep_gross)
+
+    return tax

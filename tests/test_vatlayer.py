@@ -3,7 +3,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django_prices_vatlayer import utils
 from django_prices_vatlayer.models import VAT, RateTypes
-from prices import LinearTax
+from prices import Money, TaxedMoney
 
 
 @pytest.fixture
@@ -87,25 +87,49 @@ def test_save_vat_rate_types(json_types_success):
 
 @pytest.mark.parametrize(
     'rate_name,expected', [
-        ('medicine', LinearTax(20/100, 'AT - medicine')),
-        ('standard', LinearTax(20/100, 'AT - standard')),
-        ('books', LinearTax(10/100, 'AT - books')),
-        (None, LinearTax(20/100, 'AT - None'))])
-def test_get_tax_for_country(vat_country, rate_name, expected):
+        ('medicine', 20/100), ('standard', 20/100), ('books', 10/100),
+        (None, 20/100)])
+def test_get_tax_rate_for_country(vat_country, rate_name, expected):
     country_code = vat_country.country_code
-    rate = utils.get_tax_for_country(country_code, rate_name)
+    rate = utils.get_tax_rate_for_country(country_code, rate_name)
     assert rate == expected
 
 
 @pytest.mark.parametrize(
     'rate_name,expected', [
-        ('medicine', LinearTax(20/100, 'AZ - medicine')),
-        ('standard', LinearTax(20/100, 'AZ - standard')),
-        (None, LinearTax(20/100, 'AZ - None'))])
-def test_get_tax_for_country(vat_without_reduced_rates, rate_name, expected):
+        ('medicine', 20/100), ('standard', 20/100), (None, 20/100)])
+def test_get_tax_rate_for_country_without_reduced_rates(
+        vat_without_reduced_rates, rate_name, expected):
     country_code = vat_without_reduced_rates.country_code
-    rate = utils.get_tax_for_country(country_code, rate_name)
+    rate = utils.get_tax_rate_for_country(country_code, rate_name)
     assert rate == expected
+
+
+@pytest.mark.django_db
+def test_get_tax_rate_for_country_error():
+    rate = utils.get_tax_rate_for_country('XX', 'rate name')
+    assert rate is None
+
+
+@pytest.mark.parametrize(
+    'rate_name,expected_gross,expected_net', [
+        ('medicine', 120, '83.33'), ('standard', 120, '83.33'),
+        ('books', 110, '90.91'), (None, 120, '83.33')])
+def test_get_tax_for_country(
+        vat_country, rate_name, expected_gross, expected_net):
+    country_code = vat_country.country_code
+    tax = utils.get_tax_for_country(country_code, rate_name)
+    
+    assert tax(Money(100, 'USD')) == TaxedMoney(
+        net=Money(100, 'USD'), gross=Money(expected_gross, 'USD'))
+    assert tax(Money(100, 'USD'), keep_gross=True) == TaxedMoney(
+        net=Money(expected_net, 'USD'), gross=Money(100, 'USD'))
+
+    taxed_money = TaxedMoney(net=Money(100, 'USD'), gross=Money(100, 'USD'))
+    assert tax(taxed_money) == TaxedMoney(
+        net=Money(100, 'USD'), gross=Money(expected_gross, 'USD'))
+    assert tax(taxed_money, keep_gross=True) == TaxedMoney(
+        net=Money(expected_net, 'USD'), gross=Money(100, 'USD'))
 
 
 @pytest.mark.django_db
