@@ -32,7 +32,7 @@ pip install django-prices-vatlayer
 After installation, you'll also need to setup your site to use it. To do that, open your `settings.py` and do the following:
 
 1. Add `'django_prices_vatlayer',` to your `INSTALLED_APPS`
-2. Add `VATLAYER_ACCESS_KEY = 'YOUR_API_KEY_HERE'` semewhere in your file
+2. Add `VATLAYER_ACCESS_KEY = 'YOUR_API_KEY_HERE'` line
 3. Replace `YOUR_API_KEY_HERE` with the API key that you have obtained from vatlayer API
 
 Lastly, run `manage.py migrate` to create new tables in your database and `manage.py get_vat_rates` to populate them with initial data.
