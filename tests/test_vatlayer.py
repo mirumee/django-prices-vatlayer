@@ -106,7 +106,7 @@ def test_get_tax_rate_for_country_without_reduced_rates(
 
 
 @pytest.mark.django_db
-def test_get_tax_rate_for_country_error():
+def test_get_tax_rate_for_country_none_on_invalid_code():
     rate = utils.get_tax_rate_for_country('XX', 'rate name')
     assert rate is None
 
@@ -119,7 +119,7 @@ def test_get_tax_for_country(
         vat_country, rate_name, expected_gross, expected_net):
     country_code = vat_country.country_code
     tax = utils.get_tax_for_country(country_code, rate_name)
-    
+
     assert tax(Money(100, 'USD')) == TaxedMoney(
         net=Money(100, 'USD'), gross=Money(expected_gross, 'USD'))
     assert tax(Money(100, 'USD'), keep_gross=True) == TaxedMoney(
@@ -133,7 +133,7 @@ def test_get_tax_for_country(
 
 
 @pytest.mark.django_db
-def test_get_tax_for_country_error():
+def test_get_tax_for_country_none_on_invalid_code():
     rate = utils.get_tax_for_country('XX', 'rate name')
     assert rate is None
 
@@ -142,19 +142,19 @@ def test_get_tax_for_country_error():
 def test_get_vat_rates_command(
         fetch_vat_rates_success, fetch_rate_types_success):
     call_command('get_vat_rates')
-    assert 1 == VAT.objects.count()
-    assert 1 == RateTypes.objects.count()
+    assert VAT.objects.count() == 1
+    assert RateTypes.objects.count() == 1
 
 
 @pytest.mark.django_db
-def test_get_vat_rates_command(
+def test_get_vat_rates_command_request_vat_rates_failed(
         fetch_vat_rates_error, fetch_rate_types_success):
     with pytest.raises(ImproperlyConfigured):
         call_command('get_vat_rates')
 
 
 @pytest.mark.django_db
-def test_get_vat_rates_command(
+def test_get_vat_rates_command_request_rate_types_failed(
         fetch_vat_rates_success, fetch_rate_types_error):
     with pytest.raises(ImproperlyConfigured):
         call_command('get_vat_rates')

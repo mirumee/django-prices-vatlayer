@@ -17,7 +17,7 @@ DEFAULT_URL = PROTOCOL + 'apilayer.net/api/'
 
 VATLAYER_API = getattr(settings, 'VATLAYER_API', DEFAULT_URL)
 
-RATINGS_URL = 'rate_list'
+RATES_URL = 'rate_list'
 TYPES_URL = 'types'
 
 
@@ -38,7 +38,7 @@ def fetch_rate_types():
 
 
 def fetch_vat_rates():
-    return fetch_from_api(RATINGS_URL)
+    return fetch_from_api(RATES_URL)
 
 
 def save_vat_rate_types(json_data):
