@@ -59,10 +59,11 @@ def create_objects_from_json(json_data):
 
     # Handle proper response
     rates = json_data['rates']
-    for code, value in rates.items():
+    for country_code, data in rates.items():
         VAT.objects.update_or_create(
-            country_code=code, defaults={'data': value})
-        get_tax_rates_for_country(code, force_refresh=True)
+            country_code=country_code, defaults={'data': data})
+        country_cache_key = CACHE_KEY + country_code
+        cache.set(country_cache_key, data, CACHE_TIME)
 
 
 def get_tax_rates_for_country(country_code, force_refresh=False):
