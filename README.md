@@ -5,15 +5,17 @@ django-prices-vatlayer: [Vatlayer API](https://vatlayer.com/) support for `price
 
 ```python
 from prices import Money
-from django_prices_vatlayer.utils import get_tax_for_country
+from django_prices_vatlayer.utils import (
+    get_tax_for_rate, get_tax_rates_for_country)
 
-tax_for_country = get_tax_for_country('DE', 'books')
+de_tax_rates = get_tax_rates_for_country('DE')
+books_tax = get_tax_for_rate(de_tax_rates, 'books')
 
-price_with_vat = tax_for_country(Money(10, 'EUR'))
+price_with_vat = books_tax(Money(10, 'EUR'))
 print(price_with_vat)
 # TaxedMoney(net=Money('10', 'EUR'), gross=Money('11', 'EUR'))
 
-price_with_vat = tax_for_country(
+price_with_vat = books_tax(
     TaxedMoney(net=Money(10, 'EUR'), gross=Money(10, 'EUR')))
 print(price_with_vat)
 # TaxedMoney(net=Money('10', 'EUR'), gross=Money('11', 'EUR'))
