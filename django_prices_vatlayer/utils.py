@@ -81,7 +81,7 @@ def get_tax_rates_for_country(country_code, force_refresh=False):
 def get_tax_rate(tax_rates, rate_name=None):
     if tax_rates is None:
         return None
-        
+
     try:
         reduced_rates = tax_rates['reduced_rates']
         standard_rate = tax_rates['standard_rate']
