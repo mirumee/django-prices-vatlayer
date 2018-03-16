@@ -8,7 +8,8 @@ DEFAULT_TYPES_INSTANCE_ID = 1
 
 class VAT(models.Model):
     country_code = models.CharField(
-        pgettext_lazy('Vat field', 'country code'), max_length=2)
+        pgettext_lazy('Vat field', 'country code'), max_length=2,
+        db_index=True)
     data = JSONField(pgettext_lazy('Vat field', 'data'))
 
     def __str__(self):
