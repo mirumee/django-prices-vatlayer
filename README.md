@@ -47,7 +47,7 @@ By default, `django-prices-vatlayer` uses the unsafe HTTP connection during deve
 
 However as HTTPS unavailable in vatlayer's free plan, you may preffer to force unsafe HTTP on your live site as well. To do so, just add following line to your `settings.py`:
 
-`VATLAYER_API = 'https://apilayer.net/api/'`
+`VATLAYER_API = 'http://apilayer.net/api/'`
 
 Remember that doing so may expose you to DNS poisoning and man-in-the-middle attacks and we recommend that `VATLAYER_API` is set to use the HTTPS.
 
