@@ -1,12 +1,9 @@
-from __future__ import division
-from prices import LinearTax
 import pytest
-
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
-
 from django_prices_vatlayer import utils
 from django_prices_vatlayer.models import VAT, RateTypes
+from prices import Money, TaxedMoney
 
 
 @pytest.fixture
@@ -33,26 +30,22 @@ def rate_type(db):
 
 @pytest.fixture
 def fetch_vat_rates_success(monkeypatch, json_success):
-    monkeypatch.setattr(utils, 'fetch_vat_rates',
-                        lambda: json_success)
+    monkeypatch.setattr(utils, 'fetch_vat_rates', lambda: json_success)
 
 
 @pytest.fixture
 def fetch_vat_rates_error(monkeypatch, json_error):
-    monkeypatch.setattr(utils, 'fetch_vat_rates',
-                        lambda: json_error)
+    monkeypatch.setattr(utils, 'fetch_vat_rates', lambda: json_error)
 
 
 @pytest.fixture
 def fetch_rate_types_success(monkeypatch, json_types_success):
-    monkeypatch.setattr(utils, 'fetch_rate_types',
-                        lambda: json_types_success)
+    monkeypatch.setattr(utils, 'fetch_rate_types', lambda: json_types_success)
 
 
 @pytest.fixture
 def fetch_rate_types_error(monkeypatch, json_error):
-    monkeypatch.setattr(utils, 'fetch_rate_types',
-                        lambda: json_error)
+    monkeypatch.setattr(utils, 'fetch_rate_types', lambda: json_error)
 
 
 def test_validate_data_invalid(json_error):
@@ -66,7 +59,6 @@ def test_validate_data_valid(json_success):
 
 @pytest.mark.django_db
 def test_create_objects_from_json_error(json_error, json_success):
-
     vat_counts = VAT.objects.count()
 
     with pytest.raises(ImproperlyConfigured):
@@ -93,57 +85,90 @@ def test_save_vat_rate_types(json_types_success):
     assert 1 == RateTypes.objects.count()
 
 
-@pytest.mark.parametrize('rate_name,expected',
-                         [('medicine', LinearTax(20/100, 'AT - medicine')),
-                          ('standard', LinearTax(20/100, 'AT - standard')),
-                          ('books', LinearTax(10/100, 'AT - books')),
-                          (None, LinearTax(20/100, 'AT - None'))])
-def test_get_tax_for_country(vat_country, rate_name, expected):
+def test_get_tax_rates_for_country(vat_country):
     country_code = vat_country.country_code
-    rate = utils.get_tax_for_country(country_code, rate_name)
-    assert rate == expected
+    tax_rates = utils.get_tax_rates_for_country(country_code)
+    assert tax_rates['country_name'] == 'Austria'
+    assert tax_rates['standard_rate'] == 20
+    assert tax_rates['reduced_rates'] == {'books': 10, 'foodstuffs': 10}
 
 
-@pytest.mark.parametrize('rate_name,expected',
-                         [('medicine', LinearTax(20/100, 'AZ - medicine')),
-                          ('standard', LinearTax(20/100, 'AZ - standard')),
-                          (None, LinearTax(20/100, 'AZ - None'))])
-def test_get_tax_for_country(vat_without_reduced_rates, rate_name, expected):
+def test_get_tax_rates_for_country_without_reduced_rates(
+        vat_without_reduced_rates):
     country_code = vat_without_reduced_rates.country_code
-    rate = utils.get_tax_for_country(country_code, rate_name)
-    assert rate == expected
+    tax_rates = utils.get_tax_rates_for_country(country_code)
+    assert tax_rates['country_name'] == 'Austria'
+    assert tax_rates['standard_rate'] == 20
+    assert tax_rates['reduced_rates'] is None
 
 
 @pytest.mark.django_db
-def test_get_tax_for_country_error():
-    rate = utils.get_tax_for_country('XX', 'rate name')
-    assert rate is None
+def test_get_tax_rates_for_country_invalid_code():
+    tax_rates = utils.get_tax_rates_for_country('XX')
+    assert tax_rates is None
 
 
-@pytest.mark.django_db
-def test_get_vat_rates_command(fetch_vat_rates_success,
-                               fetch_rate_types_success):
-
-    call_command('get_vat_rates')
-    assert 1 == VAT.objects.count()
-    assert 1 == RateTypes.objects.count()
+def test_get_tax_rate_standard_rate(vat_country):
+    tax_rates = vat_country.data
+    standard_rate = utils.get_tax_rate(tax_rates)
+    assert standard_rate == tax_rates['standard_rate']
 
 
-@pytest.mark.django_db
-def test_get_vat_rates_command(fetch_vat_rates_error, fetch_rate_types_success):
-
-    with pytest.raises(ImproperlyConfigured):
-        call_command('get_vat_rates')
-
-
-@pytest.mark.django_db
-def test_get_vat_rates_command(fetch_vat_rates_success,
-                               fetch_rate_types_error):
-
-    with pytest.raises(ImproperlyConfigured):
-        call_command('get_vat_rates')
+def test_get_tax_rate_fallback_to_standard_rate(vat_without_reduced_rates):
+    tax_rates = vat_without_reduced_rates.data
+    hotels_rate = utils.get_tax_rate(tax_rates, 'hotels')
+    assert hotels_rate == tax_rates['standard_rate']
 
 
-@pytest.mark.django_db
-def test_singleton(rate_type):
-    assert RateTypes.objects.singleton() == rate_type
+def test_get_tax_rate_reduced_rate(vat_country):
+    tax_rates = vat_country.data
+    books_rate = utils.get_tax_rate(tax_rates, 'books')
+    assert books_rate == tax_rates['reduced_rates']['books']
+
+
+def test_get_tax_for_rate_standard_rate(vat_country):
+    tax_rates = vat_country.data
+    standard_tax = utils.get_tax_for_rate(tax_rates)
+
+    assert standard_tax(Money(100, 'USD')) == TaxedMoney(
+        net=Money(100, 'USD'), gross=Money(120, 'USD'))
+    assert standard_tax(Money(100, 'USD'), keep_gross=True) == TaxedMoney(
+        net=Money('83.33', 'USD'), gross=Money(100, 'USD'))
+
+    taxed_money = TaxedMoney(net=Money(100, 'USD'), gross=Money(100, 'USD'))
+    assert standard_tax(taxed_money) == TaxedMoney(
+        net=Money(100, 'USD'), gross=Money(120, 'USD'))
+    assert standard_tax(taxed_money, keep_gross=True) == TaxedMoney(
+        net=Money('83.33', 'USD'), gross=Money(100, 'USD'))
+
+
+def test_get_tax_for_rate_fallback_to_standard_rate(vat_country):
+    tax_rates = vat_country.data
+    hotels_tax = utils.get_tax_for_rate(tax_rates, 'hotels')
+
+    assert hotels_tax(Money(100, 'USD')) == TaxedMoney(
+        net=Money(100, 'USD'), gross=Money(120, 'USD'))
+    assert hotels_tax(Money(100, 'USD'), keep_gross=True) == TaxedMoney(
+        net=Money('83.33', 'USD'), gross=Money(100, 'USD'))
+
+    taxed_money = TaxedMoney(net=Money(100, 'USD'), gross=Money(100, 'USD'))
+    assert hotels_tax(taxed_money) == TaxedMoney(
+        net=Money(100, 'USD'), gross=Money(120, 'USD'))
+    assert hotels_tax(taxed_money, keep_gross=True) == TaxedMoney(
+        net=Money('83.33', 'USD'), gross=Money(100, 'USD'))
+
+
+def test_get_tax_for_rate_reduced_rate(vat_country):
+    tax_rates = vat_country.data
+    books_tax = utils.get_tax_for_rate(tax_rates, 'books')
+
+    assert books_tax(Money(100, 'USD')) == TaxedMoney(
+        net=Money(100, 'USD'), gross=Money(110, 'USD'))
+    assert books_tax(Money(100, 'USD'), keep_gross=True) == TaxedMoney(
+        net=Money('90.91', 'USD'), gross=Money(100, 'USD'))
+
+    taxed_money = TaxedMoney(net=Money(100, 'USD'), gross=Money(100, 'USD'))
+    assert books_tax(taxed_money) == TaxedMoney(
+        net=Money(100, 'USD'), gross=Money(110, 'USD'))
+    assert books_tax(taxed_money, keep_gross=True) == TaxedMoney(
+        net=Money('90.91', 'USD'), gross=Money(100, 'USD'))

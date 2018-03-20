@@ -1,10 +1,10 @@
-from __future__ import division
-from prices import LinearTax
-import requests
+from decimal import Decimal
 
+import requests
 from django.conf import settings
+from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
-from django.utils import six
+from prices import flat_tax
 
 from .models import VAT, RateTypes, DEFAULT_TYPES_INSTANCE_ID
 
@@ -16,11 +16,14 @@ except AttributeError:
 PROTOCOL = 'http://' if settings.DEBUG else 'https://'
 DEFAULT_URL = PROTOCOL + 'apilayer.net/api/'
 
-VATLAYER_API = getattr(
-    settings, 'VATLAYER_API', DEFAULT_URL)
+VATLAYER_API = getattr(settings, 'VATLAYER_API', DEFAULT_URL)
 
-RATINGS_URL = 'rate_list'
+RATES_URL = 'rate_list'
 TYPES_URL = 'types'
+
+CACHE_KEY = getattr(
+    settings, 'VATLAYER_CACHE_KEY', 'vatlayer_country_vat_rates')
+CACHE_TIME = getattr(settings, 'VATLAYER_CACHE_TTL', 60 * 60)
 
 
 def validate_data(json_data):
@@ -40,15 +43,15 @@ def fetch_rate_types():
 
 
 def fetch_vat_rates():
-    return fetch_from_api(RATINGS_URL)
+    return fetch_from_api(RATES_URL)
 
 
 def save_vat_rate_types(json_data):
     validate_data(json_data)
 
     types = json_data['types']
-    RateTypes.objects.update_or_create(id=DEFAULT_TYPES_INSTANCE_ID,
-                                       defaults={'types': types})
+    RateTypes.objects.update_or_create(
+        id=DEFAULT_TYPES_INSTANCE_ID, defaults={'types': types})
 
 
 def create_objects_from_json(json_data):
@@ -56,23 +59,51 @@ def create_objects_from_json(json_data):
 
     # Handle proper response
     rates = json_data['rates']
-    for code, value in six.iteritems(rates):
+    for country_code, data in rates.items():
         VAT.objects.update_or_create(
-             country_code=code, defaults={'data': value})
+            country_code=country_code, defaults={'data': data})
+        country_cache_key = CACHE_KEY + country_code
+        cache.set(country_cache_key, data, CACHE_TIME)
 
 
-def get_tax_for_country(country_code, rate_name=None):
+def get_tax_rates_for_country(country_code, force_refresh=False):
+    country_cache_key = CACHE_KEY + country_code
+    tax_rates = cache.get(country_cache_key)
+    if not tax_rates or force_refresh:
+        try:
+            country_vat = VAT.objects.get(country_code=country_code)
+            tax_rates = country_vat.data
+            cache.set(country_cache_key, tax_rates, CACHE_TIME)
+        except ObjectDoesNotExist:
+            tax_rates = None
+    return tax_rates
+
+
+def get_tax_rate(tax_rates, rate_name=None):
+    if tax_rates is None:
+        return None
+
     try:
-        country_vat = VAT.objects.get(country_code=country_code)
-        reduced_rates = country_vat.data['reduced_rates']
-        standard_rate = country_vat.data['standard_rate']
-    except (KeyError, ObjectDoesNotExist):
+        reduced_rates = tax_rates['reduced_rates']
+        standard_rate = tax_rates['standard_rate']
+    except (KeyError):
         return None
 
     rate = standard_rate
-    if rate_name and reduced_rates and rate_name in six.iterkeys(reduced_rates):
+    if rate_name and reduced_rates and rate_name in reduced_rates:
         rate = reduced_rates[rate_name]
 
-    tax_name = '%s - %s' % (country_code, rate_name)
+    return rate
 
-    return LinearTax(rate/100, tax_name)
+
+def get_tax_for_rate(tax_rates, rate_name=None):
+    rate = get_tax_rate(tax_rates, rate_name)
+    if rate is None:
+        return None
+
+    final_tax_rate = Decimal(rate / 100)
+
+    def tax(base, keep_gross=False):
+        return flat_tax(base, final_tax_rate, keep_gross=keep_gross)
+
+    return tax
