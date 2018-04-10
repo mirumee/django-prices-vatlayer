@@ -85,6 +85,18 @@ def test_save_vat_rate_types(json_types_success):
     assert 1 == RateTypes.objects.count()
 
 
+@pytest.mark.django_db
+def test_get_tax_rate_types(rate_type):
+    rate_types = utils.get_tax_rate_types()
+    assert rate_types == rate_type.types
+
+
+@pytest.mark.django_db
+def test_get_tax_rate_types_no_rate_types():
+    rate_types = utils.get_tax_rate_types()
+    assert rate_types == []
+
+
 def test_get_tax_rates_for_country(vat_country):
     country_code = vat_country.country_code
     tax_rates = utils.get_tax_rates_for_country(country_code)
