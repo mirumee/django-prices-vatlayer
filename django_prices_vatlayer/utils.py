@@ -107,3 +107,8 @@ def get_tax_for_rate(tax_rates, rate_name=None):
         return flat_tax(base, final_tax_rate, keep_gross=keep_gross)
 
     return tax
+
+
+def get_tax_rate_types():
+    rate_types = RateTypes.objects.singleton()
+    return rate_types.types if rate_types else []
