@@ -24,7 +24,7 @@ setup(
     author_email='hello@mirumee.com',
     description='vatlayer.com support for django',
     license='BSD',
-    version='1.0.0',
+    version='1.0.1',
     url='https://github.com/mirumee/django-prices-vatlayer',
     packages=[
         'django_prices_vatlayer', 'django_prices_vatlayer.migrations',
