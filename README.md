@@ -40,16 +40,18 @@ After installation, you'll also need to setup your site to use it. To do that, o
 Lastly, run `manage.py migrate` to create new tables in your database and `manage.py get_vat_rates` to populate them with initial data.
 
 
-Forcing non-secure API connection in production
------------------------------------------------
+Forcing secure API connection in production
+-------------------------------------------
 
-By default, `django-prices-vatlayer` uses the unsafe HTTP connection during development (`DEBUG = True`) and changes to HTTPS in production, to keep communication with the `vatlayer` API secure.
+By default, as HTTP is unavailable in the free vatlayer plan, `django-prices-vatlayer` uses the unsafe HTTP connection.
 
-However as HTTPS unavailable in vatlayer's free plan, you may preffer to force unsafe HTTP on your live site as well. To do so, just add following line to your `settings.py`:
+However, if you are using a paid plan of vatlayer, you may want to force secure HTTP on your live site. To do so, just add following line in your `settings.py`:
 
-`VATLAYER_API = 'http://apilayer.net/api/'`
+```python
+VATLAYER_USE_HTTPS = True
+```
 
-Remember that doing so may expose you to DNS poisoning and man-in-the-middle attacks and we recommend that `VATLAYER_API` is set to use the HTTPS.
+Remember that using insecure HTTP may expose you to DNS poisoning and man-in-the-middle attacks; we recommend that `VATLAYER_USE_HTTPS` is set to use the secure HTTP protocol.
 
 
 Updating VAT rates
