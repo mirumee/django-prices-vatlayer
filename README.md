@@ -43,15 +43,15 @@ Lastly, run `manage.py migrate` to create new tables in your database and `manag
 Forcing secure API connection in production
 -------------------------------------------
 
-By default, as HTTP is unavailable in the free vatlayer plan, `django-prices-vatlayer` uses the unsafe HTTP connection.
+Because HTTPS is unavailable in the free vatlayer plan, `django-prices-vatlayer` uses the unsafe HTTP connection by default.
 
-However, if you are using a paid plan of vatlayer, you may want to force secure HTTP on your live site. To do so, just add following line in your `settings.py`:
+If you are using a paid plan, you can force the secure HTTP on your site by adding following line to your `settings.py`:
 
 ```python
 VATLAYER_USE_HTTPS = True
 ```
 
-Remember that using insecure HTTP may expose you to DNS poisoning and man-in-the-middle attacks; we recommend that `VATLAYER_USE_HTTPS` is set to use the secure HTTP protocol.
+Remember that not using HTTPS may expose you to DNS poisoning and man-in-the-middle attacks; we recommend enabling `VATLAYER_USE_HTTPS` in production sites.
 
 
 Updating VAT rates
