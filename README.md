@@ -4,7 +4,7 @@ django-prices-vatlayer: [Vatlayer API](https://vatlayer.com/) support for `price
 [![Build Status](https://secure.travis-ci.org/mirumee/django-prices-vatlayer.png)](https://travis-ci.org/mirumee/django-prices-vatlayer) [![codecov.io](https://img.shields.io/codecov/c/github/mirumee/django-prices-vatlayer/master.svg)](http://codecov.io/github/mirumee/django-prices-vatlayer?branch=master)
 
 ```python
-from prices import Money
+from prices import Money, TaxedMoney
 from django_prices_vatlayer.utils import (
     get_tax_for_rate, get_tax_rates_for_country)
 
