@@ -1,6 +1,7 @@
+from unittest.mock import Mock
+
 import pytest
 from django.core.exceptions import ImproperlyConfigured
-from django.core.management import call_command
 from django_prices_vatlayer import utils
 from django_prices_vatlayer.models import VAT, RateTypes
 from prices import Money, TaxedMoney
@@ -28,24 +29,47 @@ def rate_type(db):
     return RateTypes.objects.create(types=['books'])
 
 
-@pytest.fixture
-def fetch_vat_rates_success(monkeypatch, json_success):
-    monkeypatch.setattr(utils, 'fetch_vat_rates', lambda: json_success)
+@pytest.mark.vcr
+def test_fetch_vat_rates_api_key_passed_in_params():
+    rates = utils.fetch_vat_rates(access_key="DUMMY")
+    assert rates['success']
+    assert 'rates' in rates
 
 
-@pytest.fixture
-def fetch_vat_rates_error(monkeypatch, json_error):
-    monkeypatch.setattr(utils, 'fetch_vat_rates', lambda: json_error)
+@pytest.mark.vcr
+def test_fetch_vat_rates_api_key_from_settings(settings):
+    settings.VATLAYER_ACCESS_KEY = "DUMMY"
+    rates = utils.fetch_vat_rates()
+    assert rates['success']
+    assert 'rates' in rates
 
 
-@pytest.fixture
-def fetch_rate_types_success(monkeypatch, json_types_success):
-    monkeypatch.setattr(utils, 'fetch_rate_types', lambda: json_types_success)
+@pytest.mark.vcr
+def test_fetch_rate_types_api_key_from_settings(settings):
+    settings.VATLAYER_ACCESS_KEY = "DUMMY"
+    rate_types = utils.fetch_rate_types()
+    assert rate_types['success']
+    assert 'types' in rate_types
 
 
-@pytest.fixture
-def fetch_rate_types_error(monkeypatch, json_error):
-    monkeypatch.setattr(utils, 'fetch_rate_types', lambda: json_error)
+@pytest.mark.vcr
+def test_fetch_rate_types_api_key_passed_in_params():
+    rates = utils.fetch_rate_types(access_key="DUMMY")
+    assert rates['success']
+    assert 'types' in rates
+
+
+@pytest.mark.django_db
+@pytest.mark.vcr
+def test_fetch_rates_api_key_in_params():
+    utils.fetch_rates(access_key="DUMMY")
+    assert VAT.objects.exists()
+    assert RateTypes.objects.exists()
+
+
+def test_fetch_from_api_raises_exception_when_api_key_is_missing():
+    with pytest.raises(ImproperlyConfigured):
+        utils.fetch_from_api(utils.TYPES_URL)
 
 
 def test_validate_data_invalid(json_error):
