@@ -8,9 +8,8 @@ python:
 cache:
   pip: true
 install:
-  - pip install tox-travis codecov black==19.3b0 pytest-vcr
+  - pip install tox-travis codecov pytest-vcr
 script:
-  - black --check .
   - tox
 env:
   matrix:
