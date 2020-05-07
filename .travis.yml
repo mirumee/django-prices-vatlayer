@@ -7,7 +7,7 @@ python:
 cache:
   pip: true
 install:
-  - pip install tox-travis codecov pytest-vcr
+  - pip install tox-travis codecov
 script:
   - tox
 env:
