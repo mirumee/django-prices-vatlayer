@@ -1,0 +1,41 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.22.0
+    method: GET
+    uri: http://apilayer.net/api/types?access_key=DUMMY
+  response:
+    body:
+      string: '{"success":true,"types":["accommodation","admission to cultural events","admission
+        to entertainment events","admission to sporting events","advertising","agricultural
+        supplies","baby foodstuffs","bikes","books","childrens clothing","domestic
+        fuel","domestic services","e-books","foodstuffs","hotels","medical","newspapers","passenger
+        transport","pharmaceuticals","property renovations","restaurants","social
+        housing","water","wine"]}'
+    headers:
+      access-control-allow-methods:
+      - GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS
+      access-control-allow-origin:
+      - '*'
+      content-type:
+      - application/json; Charset=UTF-8
+      date:
+      - Thu, 07 May 2020 14:01:23 GMT
+      transfer-encoding:
+      - chunked
+      x-apilayer-transaction-id:
+      - 4016b0ff-3b60-4463-81ef-59fbfeca46f5
+      x-request-time:
+      - '0.019'
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -8,11 +8,6 @@ from prices import flat_tax
 
 from .models import VAT, RateTypes, DEFAULT_TYPES_INSTANCE_ID
 
-try:
-    ACCESS_KEY = settings.VATLAYER_ACCESS_KEY
-except AttributeError:
-    raise ImproperlyConfigured('VATLAYER_ACCESS_KEY is required')
-
 USE_HTTPS = getattr(settings, 'VATLAYER_USE_HTTPS', False)
 
 PROTOCOL = 'https://' if USE_HTTPS else 'http://'
@@ -34,18 +29,32 @@ def validate_data(json_data):
         raise ImproperlyConfigured(info)
 
 
-def fetch_from_api(url):
+def get_access_key_from_settings():
+    try:
+        key = settings.VATLAYER_ACCESS_KEY
+    except AttributeError:
+        return None
+    return key
+
+
+def fetch_from_api(url, access_key=None):
+    access_key = access_key or get_access_key_from_settings()
+    if not access_key:
+        raise ImproperlyConfigured(
+            "Missing vatlayer acces_key. Provide settings.VATLAYER_ACCESS_KEY or "
+            "pass access_key in params argument"
+        )
     url = VATLAYER_API + url
-    response = requests.get(url, params={'access_key': ACCESS_KEY})
+    response = requests.get(url, params={'access_key': access_key})
     return response.json()
 
 
-def fetch_rate_types():
-    return fetch_from_api(TYPES_URL)
+def fetch_rate_types(access_key=None):
+    return fetch_from_api(TYPES_URL, access_key)
 
 
-def fetch_vat_rates():
-    return fetch_from_api(RATES_URL)
+def fetch_vat_rates(access_key=None):
+    return fetch_from_api(RATES_URL, access_key)
 
 
 def save_vat_rate_types(json_data):
