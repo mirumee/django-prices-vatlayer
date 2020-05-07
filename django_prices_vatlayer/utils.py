@@ -123,3 +123,11 @@ def get_tax_for_rate(tax_rates, rate_name=None):
 def get_tax_rate_types():
     rate_types = RateTypes.objects.singleton()
     return rate_types.types if rate_types else []
+
+
+def fetch_rates(access_key=None):
+    json_response_rates = fetch_vat_rates(access_key=access_key)
+    create_objects_from_json(json_response_rates)
+
+    json_response_types = fetch_rate_types(access_key=access_key)
+    save_vat_rate_types(json_response_types)

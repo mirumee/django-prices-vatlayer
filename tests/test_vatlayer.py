@@ -59,6 +59,14 @@ def test_fetch_rate_types_api_key_passed_in_params():
     assert 'types' in rates
 
 
+@pytest.mark.django_db
+@pytest.mark.vcr
+def test_fetch_rates_api_key_in_params():
+    utils.fetch_rates(access_key="DUMMY")
+    assert VAT.objects.exists()
+    assert RateTypes.objects.exists()
+
+
 def test_fetch_from_api_raises_exception_when_api_key_is_missing():
     with pytest.raises(ImproperlyConfigured):
         utils.fetch_from_api(utils.TYPES_URL)
