@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 import requests
+import time
 from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
@@ -45,6 +46,7 @@ def fetch_from_api(url, access_key=None):
             "pass access_key in params argument"
         )
     url = VATLAYER_API + url
+    time.sleep(5)
     response = requests.get(url, params={'access_key': access_key})
     return response.json()
 
