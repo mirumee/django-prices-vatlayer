@@ -46,7 +46,6 @@ def fetch_from_api(url, access_key=None):
             "pass access_key in params argument"
         )
     url = VATLAYER_API + url
-    time.sleep(5)
     response = requests.get(url, params={'access_key': access_key})
     return response.json()
 
@@ -130,6 +129,7 @@ def get_tax_rate_types():
 def fetch_rates(access_key=None):
     json_response_rates = fetch_vat_rates(access_key=access_key)
     create_objects_from_json(json_response_rates)
+    time.sleep(5)
 
     json_response_types = fetch_rate_types(access_key=access_key)
     save_vat_rate_types(json_response_types)
