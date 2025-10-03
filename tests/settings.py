@@ -1,9 +1,7 @@
-SECRET_KEY = 'irrelevant'
+SECRET_KEY = "irrelevant"
 
-INSTALLED_APPS = ['django_prices_vatlayer']
+INSTALLED_APPS = ["django_prices_vatlayer"]
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'database.sqlite'}}
-
+    "default": {"ENGINE": "django.db.backends.sqlite3", "NAME": "database.sqlite"}
+}
