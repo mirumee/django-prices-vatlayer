@@ -38,7 +38,7 @@ test = ["pytest", "pytest-cov", "pytest-django", "pytest-vcr", "coverage[toml]"]
 "Bug Tracker" = "https://github.com/mirumee/django-prices-vatlayer/issues"
 
 [tool.hatch.build]
-include = ["django_prices_vatlayer/**/*.py", "django_prices_vatlayer/**/*.json"]
+include = ["django_prices_vatlayer/**/*.py"]
 exclude = ["tests"]
 
 [tool.hatch.version]
