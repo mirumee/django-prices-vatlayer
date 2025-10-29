@@ -1,7 +1,11 @@
 django-prices-vatlayer: [Vatlayer API](https://vatlayer.com/) support for `prices`
 =======================================================
 
-[![Build Status](https://secure.travis-ci.org/mirumee/django-prices-vatlayer.png)](https://travis-ci.org/mirumee/django-prices-vatlayer) [![codecov.io](https://img.shields.io/codecov/c/github/mirumee/django-prices-vatlayer/master.svg)](http://codecov.io/github/mirumee/django-prices-vatlayer?branch=master)
+[![codecov](https://codecov.io/github/mirumee/django-prices-vatlayer/graph/badge.svg?token=qREkrdSWe0)](https://codecov.io/github/mirumee/django-prices-vatlayer)
+![PyPI - Version](https://img.shields.io/pypi/v/django-prices-vatlayer)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/django-prices-vatlayer)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/django-prices-vatlayer)
+
 
 ```python
 from prices import Money, TaxedMoney
@@ -60,3 +64,9 @@ Updating VAT rates
 To get current VAT rates from the API run the `get_vat_rates` management command.
 
 You may also set cron job for running this task daily to always be up to date with current tax rates.
+
+---
+
+**Crafted with ❤️ by [Mirumee Software](http://mirumee.com)**
+
+hello@mirumee.com

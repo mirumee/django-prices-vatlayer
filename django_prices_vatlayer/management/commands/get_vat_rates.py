@@ -1,10 +1,10 @@
 from django.core.management.base import BaseCommand, CommandParser
 
-from ... import utils
+from django_prices_vatlayer import utils
 
 
 class Command(BaseCommand):
-    help = 'Get current vat rates in european country and saves to database'
+    help = "Get current vat rates in european country and saves to database"
 
     def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
@@ -12,9 +12,9 @@ class Command(BaseCommand):
             type=str,
             default=None,
             help=(
-               "Provide access_key, required by Vatlayer API. If missing, it will try "
-               "to use access_key defined in settings file"
-            )
+                "Provide access_key, required by Vatlayer API. If missing, it will try "
+                "to use access_key defined in settings file"
+            ),
         )
 
     def handle(self, *args, **options):

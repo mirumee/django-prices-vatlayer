@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('django_prices_vatlayer', '0002_ratetypes'),
+        ("django_prices_vatlayer", "0002_ratetypes"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='vat',
-            name='country_code',
-            field=models.CharField(db_index=True, max_length=2, verbose_name='country code'),
+            model_name="vat",
+            name="country_code",
+            field=models.CharField(
+                db_index=True, max_length=2, verbose_name="country code"
+            ),
         ),
     ]

@@ -1,32 +1,31 @@
+import time
 from decimal import Decimal
 
 import requests
-import time
 from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from prices import flat_tax
 
-from .models import VAT, RateTypes, DEFAULT_TYPES_INSTANCE_ID
+from django_prices_vatlayer.models import DEFAULT_TYPES_INSTANCE_ID, VAT, RateTypes
 
-USE_HTTPS = getattr(settings, 'VATLAYER_USE_HTTPS', False)
+USE_HTTPS = getattr(settings, "VATLAYER_USE_HTTPS", False)
 
-PROTOCOL = 'https://' if USE_HTTPS else 'http://'
-DEFAULT_URL = PROTOCOL + 'apilayer.net/api/'
+PROTOCOL = "https://" if USE_HTTPS else "http://"
+DEFAULT_URL = PROTOCOL + "apilayer.net/api/"
 
-VATLAYER_API = getattr(settings, 'VATLAYER_API', DEFAULT_URL)
+VATLAYER_API = getattr(settings, "VATLAYER_API", DEFAULT_URL)
 
-RATES_URL = 'rate_list'
-TYPES_URL = 'types'
+RATES_URL = "rate_list"
+TYPES_URL = "types"
 
-CACHE_KEY = getattr(
-    settings, 'VATLAYER_CACHE_KEY', 'vatlayer_country_vat_rates')
-CACHE_TIME = getattr(settings, 'VATLAYER_CACHE_TTL', 60 * 60)
+CACHE_KEY = getattr(settings, "VATLAYER_CACHE_KEY", "vatlayer_country_vat_rates")
+CACHE_TIME = getattr(settings, "VATLAYER_CACHE_TTL", 60 * 60)
 
 
 def validate_data(json_data):
-    if not json_data['success']:
-        info = json_data['error']['info']
+    if not json_data["success"]:
+        info = json_data["error"]["info"]
         raise ImproperlyConfigured(info)
 
 
@@ -46,7 +45,7 @@ def fetch_from_api(url, access_key=None):
             "pass access_key in params argument"
         )
     url = VATLAYER_API + url
-    response = requests.get(url, params={'access_key': access_key})
+    response = requests.get(url, params={"access_key": access_key})
     return response.json()
 
 
@@ -61,19 +60,19 @@ def fetch_vat_rates(access_key=None):
 def save_vat_rate_types(json_data):
     validate_data(json_data)
 
-    types = json_data['types']
+    types = json_data["types"]
     RateTypes.objects.update_or_create(
-        id=DEFAULT_TYPES_INSTANCE_ID, defaults={'types': types})
+        id=DEFAULT_TYPES_INSTANCE_ID, defaults={"types": types}
+    )
 
 
 def create_objects_from_json(json_data):
     validate_data(json_data)
 
     # Handle proper response
-    rates = json_data['rates']
+    rates = json_data["rates"]
     for country_code, data in rates.items():
-        VAT.objects.update_or_create(
-            country_code=country_code, defaults={'data': data})
+        VAT.objects.update_or_create(country_code=country_code, defaults={"data": data})
         country_cache_key = CACHE_KEY + country_code
         cache.set(country_cache_key, data, CACHE_TIME)
 
@@ -96,9 +95,9 @@ def get_tax_rate(tax_rates, rate_name=None):
         return None
 
     try:
-        reduced_rates = tax_rates['reduced_rates']
-        standard_rate = tax_rates['standard_rate']
-    except (KeyError):
+        reduced_rates = tax_rates["reduced_rates"]
+        standard_rate = tax_rates["standard_rate"]
+    except KeyError:
         return None
 
     rate = standard_rate
